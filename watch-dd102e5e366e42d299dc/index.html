@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0b0f14">
+  <title>Private progress mirror</title>
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --surface: #12181f;
+      --surface-2: #19212a;
+      --border: #293640;
+      --ink: #e6edf3;
+      --muted: #a9b7c2;
+      --faint: #7e909e;
+      --accent: #52c5dd;
+      --bad: #f27a8c;
+      --good: #49d39a;
+      --sans: "Segoe UI", system-ui, sans-serif;
+      --mono: "Cascadia Mono", Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      min-width: 320px;
+      min-height: 100%;
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: var(--sans);
+    }
+
+    body { min-height: 100vh; }
+    ::selection { color: #082027; background: var(--accent); }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .lock-screen {
+      display: grid;
+      min-height: 100vh;
+      padding: 24px;
+      place-items: center;
+    }
+
+    .lock-panel {
+      width: min(100%, 470px);
+      padding: 30px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+    }
+
+    .mark {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      margin-bottom: 26px;
+      place-items: center;
+      border: 1px solid var(--accent);
+      border-radius: 7px;
+    }
+
+    .mark svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: var(--accent);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.6;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 29px;
+      font-weight: 650;
+      letter-spacing: -0.025em;
+      line-height: 1.08;
+    }
+
+    .intro {
+      margin: 0 0 26px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .password-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+    }
+
+    input,
+    button {
+      min-height: 43px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      font: inherit;
+    }
+
+    input {
+      min-width: 0;
+      padding: 9px 11px;
+      color: var(--ink);
+      background: var(--surface-2);
+      font-family: var(--mono);
+      font-size: 13px;
+    }
+
+    input:focus { border-color: var(--accent); }
+
+    button {
+      padding: 9px 15px;
+      color: #082027;
+      background: var(--accent);
+      border-color: var(--accent);
+      cursor: pointer;
+      font-weight: 650;
+    }
+
+    button:hover { background: #8edced; }
+
+    button:disabled {
+      color: var(--faint);
+      background: var(--surface-2);
+      border-color: var(--border);
+      cursor: wait;
+    }
+
+    .message {
+      min-height: 20px;
+      margin: 11px 0 0;
+      color: var(--faint);
+      font-size: 12px;
+    }
+
+    .message.error { color: var(--bad); }
+    .message.success { color: var(--good); }
+
+    .privacy {
+      margin: 22px 0 0;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      color: var(--faint);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .viewer {
+      display: none;
+      min-height: 100vh;
+      background: var(--bg);
+    }
+
+    .viewer.open { display: block; }
+
+    .viewer-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      height: 42px;
+      padding: 0 12px 0 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--surface);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .viewer-bar strong { color: var(--good); font-weight: 600; }
+
+    .viewer-bar button {
+      min-height: 28px;
+      padding: 3px 9px;
+      color: var(--ink);
+      background: var(--surface-2);
+      border-color: var(--border);
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: calc(100vh - 42px);
+      border: 0;
+      background: var(--bg);
+    }
+
+    @media (max-width: 520px) {
+      .lock-screen { padding: 14px; }
+      .lock-panel { padding: 24px 20px; }
+      .password-row { grid-template-columns: 1fr; }
+      .viewer-bar span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body>
+  <main class="lock-screen" id="lockScreen">
+    <section class="lock-panel" aria-labelledby="lockTitle">
+      <div class="mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2"></path></svg>
+      </div>
+      <h1 id="lockTitle">Private progress mirror</h1>
+      <p class="intro">The status payload is encrypted before it reaches GitHub. Enter the shared password to decrypt it in this browser.</p>
+      <form id="unlockForm">
+        <label for="password">Shared password</label>
+        <div class="password-row">
+          <input id="password" name="password" type="password" autocomplete="current-password" required spellcheck="false">
+          <button id="unlockButton" type="submit">Unlock</button>
+        </div>
+        <p class="message" id="message" role="status" aria-live="polite">Password is held in memory only and is forgotten on reload.</p>
+      </form>
+      <p class="privacy">AES-256-GCM · PBKDF2-SHA-256 · 650,000 iterations · unique salt and nonce per published update. The public repository contains ciphertext and this lock screen, not the decrypted page.</p>
+    </section>
+  </main>
+
+  <section class="viewer" id="viewer" aria-label="Unlocked private status">
+    <div class="viewer-bar">
+      <span><strong>UNLOCKED</strong> · encrypted updates checked every 60 seconds · <span id="payloadTime">loading</span></span>
+      <button type="button" id="lockButton">Lock now</button>
+    </div>
+    <iframe id="cockpitFrame" title="Private migration cockpit" sandbox="allow-scripts allow-downloads"></iframe>
+  </section>
+
+  <script>
+    "use strict";
+
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+    let sessionPassword = "";
+    let currentVersion = "";
+    let currentBlobUrl = "";
+    let refreshTimer = 0;
+
+    const $ = (id) => document.getElementById(id);
+
+    function base64Bytes(value) {
+      const binary = atob(value);
+      const bytes = new Uint8Array(binary.length);
+      for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+      return bytes;
+    }
+
+    async function deriveKey(password, payload) {
+      const material = await crypto.subtle.importKey(
+        "raw",
+        encoder.encode(password),
+        "PBKDF2",
+        false,
+        ["deriveKey"]
+      );
+      return crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          hash: "SHA-256",
+          salt: base64Bytes(payload.salt),
+          iterations: payload.iterations
+        },
+        material,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["decrypt"]
+      );
+    }
+
+    async function fetchPayload() {
+      const response = await fetch(`payload.enc.json?t=${Date.now()}`, { cache: "no-store" });
+      if (!response.ok) throw new Error(`Encrypted status is unavailable (HTTP ${response.status}).`);
+      return response.json();
+    }
+
+    async function decryptPayload(payload, password) {
+      const key = await deriveKey(password, payload);
+      const clear = await crypto.subtle.decrypt(
+        {
+          name: "AES-GCM",
+          iv: base64Bytes(payload.iv),
+          additionalData: encoder.encode(payload.aad),
+          tagLength: 128
+        },
+        key,
+        base64Bytes(payload.ciphertext)
+      );
+      return decoder.decode(clear);
+    }
+
+    function showApp(html, payload) {
+      const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+      const nextUrl = URL.createObjectURL(blob);
+      $("cockpitFrame").src = nextUrl;
+      if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
+      currentBlobUrl = nextUrl;
+      currentVersion = payload.version;
+      $("payloadTime").textContent = new Date(payload.published_at).toLocaleString("en-GB");
+      $("lockScreen").hidden = true;
+      $("viewer").classList.add("open");
+    }
+
+    async function unlock(password, quiet = false) {
+      const button = $("unlockButton");
+      const message = $("message");
+      if (!quiet) {
+        button.disabled = true;
+        button.textContent = "Decrypting…";
+        message.className = "message";
+        message.textContent = "Downloading and decrypting the latest protected snapshot…";
+      }
+      try {
+        const payload = await fetchPayload();
+        if (quiet && payload.version === currentVersion) return;
+        const html = await decryptPayload(payload, password);
+        showApp(html, payload);
+        if (!quiet) {
+          sessionPassword = password;
+          refreshTimer = window.setInterval(() => unlock(sessionPassword, true).catch(() => {}), 60_000);
+        }
+      } catch (error) {
+        if (!quiet) {
+          message.className = "message error";
+          message.textContent = error.name === "OperationError"
+            ? "That password could not decrypt the status. Check it and try again."
+            : error.message;
+        }
+        throw error;
+      } finally {
+        if (!quiet) {
+          button.disabled = false;
+          button.textContent = "Unlock";
+        }
+      }
+    }
+
+    function lockNow() {
+      window.clearInterval(refreshTimer);
+      refreshTimer = 0;
+      sessionPassword = "";
+      currentVersion = "";
+      $("password").value = "";
+      $("viewer").classList.remove("open");
+      $("lockScreen").hidden = false;
+      $("message").className = "message";
+      $("message").textContent = "Password is held in memory only and is forgotten on reload.";
+      if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
+      currentBlobUrl = "";
+      $("cockpitFrame").removeAttribute("src");
+      $("password").focus();
+    }
+
+    $("unlockForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const password = $("password").value;
+      try { await unlock(password); } catch (_) { /* the user-facing message is set above */ }
+    });
+    $("lockButton").addEventListener("click", lockNow);
+  </script>
+</body>
+</html>
