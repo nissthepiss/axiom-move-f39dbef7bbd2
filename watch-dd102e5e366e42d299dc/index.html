@@ -230,7 +230,7 @@
         </div>
         <p class="message" id="message" role="status" aria-live="polite">Password is held in memory only and is forgotten on reload.</p>
       </form>
-      <p class="privacy">AES-256-GCM · PBKDF2-SHA-256 · 650,000 iterations · unique salt and nonce per published update. The public repository contains ciphertext and this lock screen, not the decrypted page.</p>
+      <p class="privacy">AES-256-GCM · HKDF-SHA-256 · 192-bit random shared password · unique salt and nonce per published update. The public repository contains ciphertext and this lock screen, not the decrypted page.</p>
     </section>
   </main>
 
@@ -265,16 +265,16 @@
       const material = await crypto.subtle.importKey(
         "raw",
         encoder.encode(password),
-        "PBKDF2",
+        "HKDF",
         false,
         ["deriveKey"]
       );
       return crypto.subtle.deriveKey(
         {
-          name: "PBKDF2",
+          name: "HKDF",
           hash: "SHA-256",
           salt: base64Bytes(payload.salt),
-          iterations: payload.iterations
+          info: encoder.encode(payload.info)
         },
         material,
         { name: "AES-GCM", length: 256 },
@@ -328,7 +328,9 @@
       try {
         const payload = await fetchPayload();
         if (quiet && payload.version === currentVersion) return;
+        if (!quiet) message.textContent = "Encrypted snapshot downloaded. Deriving the in-browser key…";
         const html = await decryptPayload(payload, password);
+        if (!quiet) message.textContent = "Decrypted. Opening the live cockpit…";
         showApp(html, payload);
         if (!quiet) {
           sessionPassword = password;
