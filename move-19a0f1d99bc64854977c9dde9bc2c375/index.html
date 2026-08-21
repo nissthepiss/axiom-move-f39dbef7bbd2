@@ -264,9 +264,10 @@
     .steps p { margin: 0; color: var(--text-2); }
     .stage-list { margin: 1.5rem 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
     .stage-list > li { display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto; align-items: baseline; gap: .5rem 1rem; padding: .85rem 0; border-bottom: 1px solid var(--line); }
-    .stage-list .num { margin: 0; color: var(--muted-2); font-size: .78rem; }
-    .stage-list h3 { margin: 0; font-size: .98rem; }
-    .stage-list p { grid-column: 2 / -1; margin: .3rem 0 0; color: var(--muted); font-size: .92rem; }
+    .stage-list .num { grid-area: 1 / 1; margin: 0; color: var(--muted-2); font-size: .78rem; }
+    .stage-list h3 { grid-area: 1 / 2; margin: 0; font-size: .98rem; }
+    .stage-list .pill { grid-area: 1 / 3; justify-self: end; }
+    .stage-list > li > p:not(.num) { grid-column: 2 / -1; margin: .3rem 0 0; color: var(--muted); font-size: .92rem; }
 
     /* ---------- categories ---------- */
     .cats { margin-top: 1.75rem; border-top: 1px solid var(--line); }
@@ -340,7 +341,7 @@
       .col { max-width: none; }
       .steps > li { grid-template-columns: 1fr; gap: .6rem; }
       .stage-list > li { grid-template-columns: 2rem minmax(0, 1fr); }
-      .stage-list .pill { grid-column: 2; justify-self: start; }
+      .stage-list .pill { grid-area: 2 / 2; justify-self: start; }
       .tags > div, .bounds > div, .glossary > div { grid-template-columns: 1fr; }
       .contents .what { display: none; }
     }
