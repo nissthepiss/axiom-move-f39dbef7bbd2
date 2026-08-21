@@ -5,457 +5,919 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
   <meta name="robots" content="noindex, nofollow, noarchive">
-  <title>Axiom3D move — plain-English status</title>
+  <title>Axiom3D migration — what it is for, in plain English</title>
   <style>
     :root {
-      --bg: #07100c;
-      --surface: #0d1812;
-      --surface-2: #122019;
-      --surface-3: #17281e;
-      --text: #f1f7f3;
-      --muted: #adc0b3;
-      --line: #2c4435;
-      --green: #83dda8;
-      --green-2: #b8f1cf;
-      --green-soft: #10291a;
-      --amber: #f2ad72;
-      --amber-soft: #2a1f15;
-      --red: #ff9181;
-      --red-soft: #2d1815;
-      --blue: #8bc7ff;
-      --shadow: rgba(0, 0, 0, .28);
-      --max: 1480px;
+      --bg: #0a0a0b;
+      --bg-2: #0e0e10;
+      --surface: #131316;
+      --surface-2: #191920;
+      --line: #26262b;
+      --line-2: #33333a;
+      --text: #f4f4f5;
+      --text-2: #d7d7db;
+      --muted: #a3a3aa;
+      --muted-2: #85858e;
+      --accent: #ff8b3d;
+      --accent-2: #ffb27a;
+      --accent-dim: #a85a24;
+      --accent-soft: rgba(255, 139, 61, .09);
+      --measure: 74ch;
+      --max: 1180px;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
     }
 
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; background: var(--bg); }
+
+    html {
+      background: var(--bg);
+      scroll-behavior: smooth;
+      scrollbar-color: var(--line-2) var(--bg);
+      scrollbar-width: thin;
+      -webkit-text-size-adjust: 100%;
+    }
+    ::-webkit-scrollbar { width: 12px; height: 12px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--line-2); border: 3px solid var(--bg); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-dim); }
+    ::selection { background: var(--accent); color: #0a0a0b; }
+
     body {
       margin: 0;
       color: var(--text);
-      background:
-        radial-gradient(circle at 85% 8%, rgba(71, 157, 104, .16), transparent 28rem),
-        linear-gradient(rgba(131, 221, 168, .026) 1px, transparent 1px),
-        var(--bg);
-      background-size: auto, 100% 34px, auto;
-      font: 16px/1.6 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      font: 16.5px/1.62 var(--sans);
+      overflow-wrap: break-word;
       -webkit-font-smoothing: antialiased;
     }
-    a { color: inherit; text-underline-offset: .22em; }
-    h1, h2, h3, p { margin-top: 0; }
-    h1, h2, h3 { text-wrap: balance; }
-    p { text-wrap: pretty; }
-    strong { color: var(--text); }
-    .mono, .eyebrow, .number, .pill, .brand, .card-number {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    }
 
-    .wrap { width: min(var(--max), calc(100% - 3rem)); margin-inline: auto; }
+    h1, h2, h3, h4, p, ul, ol, dl, dd, figure { margin-top: 0; }
+    h1, h2, h3, h4 { text-wrap: balance; line-height: 1.18; }
+    p { text-wrap: pretty; }
+    a { color: var(--accent-2); text-underline-offset: .2em; }
+    a:hover { color: var(--accent); }
+    strong { color: var(--text); font-weight: 650; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+    [id] { scroll-margin-top: 5.5rem; }
+
+    .mono, .num, .tag, .range, .pill, .tl-time, .cat-num, .brand { font-family: var(--mono); }
+    .eyebrow {
+      margin: 0 0 .9rem;
+      color: var(--muted);
+      font-size: .8rem;
+    }
+    .wrap { width: min(var(--max), calc(100% - 2.75rem)); margin-inline: auto; }
+    .measure { max-width: var(--measure); }
+
+    .skip {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      z-index: 50;
+      padding: .7rem 1rem;
+      background: var(--accent);
+      color: #0a0a0b;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .skip:focus { left: 0; color: #0a0a0b; }
+
+    /* ---------- sticky navigation ---------- */
     .topbar {
-      min-height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--bg);
       border-bottom: 1px solid var(--line);
     }
-    .brand { color: var(--green); font-weight: 800; letter-spacing: .12em; text-decoration: none; }
-    .nav { display: flex; gap: 1.25rem; color: var(--muted); font-size: .9rem; }
-    .nav a:hover, .nav a:focus-visible { color: var(--text); }
-
-    .hero { padding-bottom: clamp(3.5rem, 8vw, 7.5rem); border-bottom: 1px solid var(--line); }
-    .hero-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.55fr) minmax(300px, .65fr);
-      align-items: end;
-      gap: clamp(2rem, 7vw, 7rem);
-      padding-top: clamp(4rem, 9vw, 9rem);
+    .bar {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      min-height: 54px;
     }
-    .eyebrow {
-      margin-bottom: 1rem;
-      color: var(--green);
-      font-size: .76rem;
-      font-weight: 800;
-      letter-spacing: .13em;
+    .brand {
+      flex: none;
+      color: var(--text);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .16em;
       text-transform: uppercase;
+      text-decoration: none;
     }
-    h1 {
-      max-width: 1050px;
-      margin-bottom: 1.5rem;
-      font-size: clamp(3rem, 7vw, 7.4rem);
-      line-height: .96;
-      letter-spacing: -.065em;
+    .brand span { color: var(--accent); }
+    .nav {
+      display: flex;
+      gap: 1.15rem;
+      min-width: 0;
+      margin-left: auto;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      white-space: nowrap;
     }
-    .lede { max-width: 930px; margin: 0; color: var(--muted); font-size: clamp(1.08rem, 2vw, 1.42rem); }
-    .truth {
-      padding: 1.55rem;
-      border: 1px solid var(--line);
-      background: linear-gradient(145deg, var(--surface-3), var(--surface));
-      box-shadow: 14px 14px 0 #163724;
+    .nav a {
+      padding: .35rem 0;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      font-size: .82rem;
+      text-decoration: none;
+      transition: color .15s ease, border-color .15s ease;
     }
-    .truth .big { margin-bottom: 1.8rem; font-size: 1.5rem; font-weight: 720; line-height: 1.15; }
-    .truth dl { margin: 0; }
-    .truth dl div { display: flex; justify-content: space-between; gap: 1rem; padding: .72rem 0; border-top: 1px solid var(--line); }
-    .truth dt { color: var(--muted); }
-    .truth dd { margin: 0; text-align: right; font-weight: 750; }
+    .nav a:hover, .nav a:focus-visible { color: var(--text); border-bottom-color: var(--accent); }
 
-    .facts {
+    /* ---------- masthead ---------- */
+    .masthead { padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(2.5rem, 5vw, 3.5rem); border-bottom: 1px solid var(--line); }
+    h1 {
+      max-width: 20ch;
+      margin-bottom: 1.25rem;
+      font-size: clamp(1.95rem, 4.4vw, 3.05rem);
+      letter-spacing: -.02em;
+    }
+    .lede { max-width: var(--measure); margin-bottom: 1.5rem; color: var(--text-2); font-size: clamp(1.02rem, 1.6vw, 1.16rem); }
+    .mast-cols {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      margin-top: clamp(4rem, 8vw, 7rem);
-      border: 1px solid var(--line);
+      grid-template-columns: minmax(0, 1.5fr) minmax(280px, .85fr);
+      align-items: start;
+      gap: clamp(1.5rem, 4vw, 3.5rem);
+      margin-top: 2rem;
+    }
+    .northstar {
+      padding: 1.05rem 1.25rem;
+      border: 1px solid var(--line-2);
+      background: var(--accent-soft);
+    }
+    .northstar p { margin: 0; color: var(--text); }
+    .northstar .label { display: block; margin-bottom: .55rem; padding-bottom: .55rem; border-bottom: 1px solid var(--line-2); color: var(--accent); font-family: var(--mono); font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .scope-note { margin: 1.25rem 0 0; padding-left: calc(1.25rem + 1px); color: var(--text-2); font-size: .92rem; }
+    .scope-note .label { display: block; margin-bottom: .35rem; color: var(--muted-2); font-family: var(--mono); font-size: .68rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+    .scope-note i { color: var(--accent-dim); font-style: normal; }
+
+    .truth { border: 1px solid var(--line); border-top: 2px solid var(--accent); background: var(--surface); }
+    .truth h2 { margin: 0; padding: 1rem 1.15rem .85rem; font-size: .95rem; letter-spacing: -.005em; }
+    .truth dl { margin: 0; padding: 0 1.15rem 1.05rem; }
+    .truth dl > div { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: .55rem 0; border-top: 1px solid var(--line); }
+    .truth dt { color: var(--muted); font-size: .88rem; }
+    .truth dd { margin: 0; color: var(--text); font-weight: 650; text-align: right; }
+    .truth .note { padding: .85rem 1.15rem; border-top: 1px solid var(--line); margin: 0; color: var(--muted); font-size: .82rem; background: var(--bg-2); }
+
+    .contents { margin-top: clamp(2rem, 4vw, 3rem); padding-top: 1.5rem; border-top: 1px solid var(--line); }
+    .contents ol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .1rem 2.5rem; margin: 0; padding: 0; list-style: none; }
+    .contents li { border-bottom: 1px solid var(--line); }
+    .contents a { display: flex; align-items: baseline; gap: .9rem; padding: .6rem 0; color: var(--text); text-decoration: none; }
+    .contents a:hover, .contents a:focus-visible { color: var(--accent-2); }
+    .contents .num { flex: none; color: var(--accent); font-size: .75rem; }
+    .contents .what { color: var(--muted); font-size: .84rem; margin-left: auto; text-align: right; }
+
+    /* ---------- section frame ---------- */
+    section { border-bottom: 1px solid var(--line); }
+    .band { background: var(--bg-2); }
+    .sec {
+      display: grid;
+      grid-template-columns: 7.5rem minmax(0, 1fr);
+      gap: clamp(1.25rem, 4vw, 3.5rem);
+      padding-block: clamp(2.75rem, 5.5vw, 4.5rem);
+    }
+    .rail { position: sticky; top: 5rem; align-self: start; }
+    .rail .num { margin: 0 0 .3rem; color: var(--accent); font-size: .78rem; }
+    .rail .rail-label { margin: 0; color: var(--muted-2); font-size: .78rem; letter-spacing: .04em; }
+    .col { max-width: var(--measure); }
+    h2 { margin-bottom: 1.1rem; font-size: clamp(1.55rem, 3vw, 2.1rem); letter-spacing: -.018em; }
+    h3 { margin-bottom: .55rem; font-size: 1.08rem; }
+    h4 { margin: 1.5rem 0 .5rem; color: var(--text); font-size: .95rem; }
+    .col > p { color: var(--text-2); }
+    .col > p.sub { color: var(--muted); }
+
+    /* ---------- generic pieces ---------- */
+    .callout {
+      margin: 1.6rem 0;
+      padding: 1.05rem 1.25rem;
+      border: 1px solid var(--line-2);
       background: var(--surface);
     }
-    .facts div { min-height: 112px; display: flex; flex-direction: column; justify-content: space-between; gap: .8rem; padding: 1.2rem; border-right: 1px solid var(--line); }
-    .facts div:last-child { border-right: 0; }
-    .facts span { color: var(--muted); font-size: .76rem; }
-    .facts strong { line-height: 1.22; }
+    .callout p { margin: 0; color: var(--text); }
+    .callout p + p { margin-top: .7rem; color: var(--text-2); }
+    .callout .label { display: block; margin-bottom: .55rem; padding-bottom: .55rem; border-bottom: 1px solid var(--line-2); color: var(--accent); font-family: var(--mono); font-size: .7rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
 
-    section { border-bottom: 1px solid var(--line); }
-    .section-grid {
-      display: grid;
-      grid-template-columns: 64px minmax(0, 1fr);
-      gap: clamp(1rem, 5vw, 5rem);
-      padding-block: clamp(4.5rem, 9vw, 9rem);
+    .points { margin: 1rem 0 0; padding: 0; list-style: none; }
+    .points li { position: relative; padding: .38rem 0 .38rem 1.15rem; color: var(--text-2); }
+    .points li::before { content: ""; position: absolute; left: 0; top: .95em; width: 6px; height: 6px; background: var(--accent-dim); }
+    .points strong { color: var(--text); }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .22rem .55rem;
+      border: 1px solid var(--line-2);
+      color: var(--muted);
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      white-space: nowrap;
     }
-    .number { margin: 0; color: #789083; font-size: .78rem; }
-    h2 {
-      max-width: 1050px;
-      margin-bottom: 1.8rem;
-      font-size: clamp(2.25rem, 4.8vw, 5rem);
-      line-height: 1;
-      letter-spacing: -.055em;
+    .pill::before { content: ""; width: 7px; height: 7px; flex: none; }
+    .pill.done { color: var(--text); border-color: var(--line-2); }
+    .pill.done::before { background: var(--text); }
+    .pill.doing { color: var(--accent); border-color: var(--accent-dim); background: var(--accent-soft); }
+    .pill.doing::before { background: var(--accent); }
+    .pill.next { color: var(--accent-2); border-color: var(--accent-dim); }
+    .pill.next::before { border: 1px solid var(--accent); }
+    .pill.later { color: var(--muted-2); }
+    .pill.later::before { border: 1px solid var(--muted-2); }
+
+    .tag {
+      display: inline-block;
+      padding: .16rem .5rem;
+      border: 1px solid var(--accent-dim);
+      color: var(--accent-2);
+      font-size: .76rem;
+      white-space: nowrap;
     }
-    h3 { margin-bottom: .65rem; font-size: 1.2rem; line-height: 1.25; }
-    .big-copy { max-width: 1080px; color: #d8e6dc; font-size: clamp(1.2rem, 2.35vw, 1.8rem); line-height: 1.44; }
-    .warning {
-      max-width: 950px;
-      margin: 2rem 0 0;
-      padding: 1.45rem;
-      border: 1px solid #6b4a2c;
-      border-left: 5px solid var(--amber);
-      color: #f5d9bf;
-      background: var(--amber-soft);
-      font-weight: 600;
+    .range { color: var(--accent); font-size: .82rem; white-space: nowrap; }
+
+    details { margin-top: 1.35rem; border: 1px solid var(--line); background: var(--surface); }
+    summary {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .8rem 1.05rem;
+      color: var(--text);
+      font-size: .9rem;
+      font-weight: 650;
+      cursor: pointer;
+      list-style: none;
     }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; margin-left: auto; color: var(--accent); font-family: var(--mono); font-size: 1.05rem; line-height: 1; }
+    details[open] summary::after { content: "\2013"; }
+    details[open] summary { border-bottom: 1px solid var(--line); }
+    .details-body { padding: 1rem 1.05rem 1.15rem; }
+    .details-body > :last-child { margin-bottom: 0; }
+    .details-body .points { margin-top: 0; }
 
-    .scope { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 3rem; border: 1px solid var(--line); background: var(--line); }
-    .scope article { min-height: 245px; padding: 1.5rem; background: var(--surface); }
-    .scope h3 { color: var(--green-2); }
-    .scope p { margin: 0; color: var(--muted); }
-    .scope .state { display: inline-block; margin-bottom: 2.5rem; color: var(--green); font-size: .74rem; font-weight: 800; letter-spacing: .08em; }
+    /* ---------- status ---------- */
+    .steps { margin: 1.5rem 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+    .steps > li { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 1.25rem; padding: 1.1rem 0; border-bottom: 1px solid var(--line); }
+    .steps h3 { margin-bottom: .35rem; }
+    .steps p { margin: 0; color: var(--text-2); }
+    .stage-list { margin: 1.5rem 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+    .stage-list > li { display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto; align-items: baseline; gap: .5rem 1rem; padding: .85rem 0; border-bottom: 1px solid var(--line); }
+    .stage-list .num { margin: 0; color: var(--muted-2); font-size: .78rem; }
+    .stage-list h3 { margin: 0; font-size: .98rem; }
+    .stage-list p { grid-column: 2 / -1; margin: .3rem 0 0; color: var(--muted); font-size: .92rem; }
 
-    .example { background: linear-gradient(150deg, #0d2015, #09140e 70%); }
-    .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin-top: 3rem; border: 1px solid #38664a; background: #38664a; }
-    .flow article { min-height: 270px; padding: 1.5rem; background: var(--surface); }
-    .flow .step { display: grid; place-items: center; width: 38px; height: 38px; margin-bottom: 3rem; border: 1px solid var(--green); border-radius: 50%; color: var(--green); font-weight: 800; }
-    .flow p { margin: 0; color: var(--muted); }
-    .snapshot {
-      display: grid;
-      grid-template-columns: .65fr 1.35fr;
-      gap: 3rem;
-      margin-top: 1rem;
-      padding: clamp(1.5rem, 4vw, 2.5rem);
-      border: 1px solid #3d7650;
-      background: #10271a;
-    }
-    .snapshot strong { font-size: clamp(1.65rem, 3vw, 2.7rem); }
-    .snapshot p { margin: 0; color: #c5d9cb; }
-    .targets { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid #3d7650; border-top: 0; background: var(--surface); }
-    .targets div { min-height: 122px; display: flex; flex-direction: column; justify-content: space-between; gap: .8rem; padding: 1rem; border-right: 1px solid #3d7650; }
-    .targets div:last-child { border-right: 0; }
-    .targets span { color: var(--muted); font-size: .84rem; }
-    .targets strong { line-height: 1.2; }
+    /* ---------- categories ---------- */
+    .cats { margin-top: 1.75rem; border-top: 1px solid var(--line); }
+    .cat { padding-block: 1.75rem; border-bottom: 1px solid var(--line); }
+    .cat-head { display: flex; align-items: baseline; gap: .8rem; margin-bottom: .85rem; }
+    .cat-num { flex: none; color: var(--accent); font-size: .78rem; }
+    .cat h3 { margin: 0; font-size: 1.22rem; letter-spacing: -.01em; }
+    .oneline { margin: 0 0 1rem; color: var(--text); font-size: 1.02rem; }
+    .oneline .label { display: block; margin-bottom: .25rem; color: var(--accent); font-family: var(--mono); font-size: .67rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+    .cat > p { color: var(--text-2); }
 
-    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 3rem; }
-    .issue { min-height: 360px; display: flex; flex-direction: column; padding: clamp(1.5rem, 3vw, 2.6rem); border: 1px solid var(--line); }
-    .issue h3 { font-size: clamp(1.5rem, 3vw, 2.45rem); }
-    .issue p { color: var(--muted); font-size: 1.04rem; }
-    .issue .bottom { margin-top: auto; margin-bottom: 0; padding-top: 1.2rem; border-top: 1px solid currentColor; color: var(--text); font-weight: 700; }
-    .issue.good { background: var(--green-soft); border-color: #376b49; }
-    .issue.slow { background: var(--amber-soft); border-color: #6b4a2c; }
+    .tags { margin: 1.1rem 0 0; border-top: 1px solid var(--line); }
+    .tags > div { display: grid; grid-template-columns: minmax(0, 13rem) minmax(0, 1fr); gap: .4rem 1.25rem; padding: .6rem 0; border-bottom: 1px solid var(--line); }
+    .tags dt { min-width: 0; }
+    .tags dd { margin: 0; color: var(--muted); font-size: .92rem; }
+    .tags dd .range { display: inline-block; margin-right: .55rem; color: var(--accent); }
 
-    .guarantees { display: grid; grid-template-columns: .8fr 1.2fr; gap: 3rem; margin-top: 1rem; padding: clamp(1.5rem, 4vw, 3.2rem); border: 1px solid var(--line); background: #09110d; }
-    .guarantees h3 { font-size: clamp(1.6rem, 3vw, 2.6rem); }
-    .guarantees ul { margin: 0; padding: 0; list-style: none; }
-    .guarantees li { position: relative; padding: .82rem 0 .82rem 1.8rem; border-bottom: 1px solid var(--line); color: #d2e1d7; }
-    .guarantees li::before { content: "✓"; position: absolute; left: 0; color: var(--green); font-weight: 900; }
+    .targets { margin: 1.35rem 0 0; padding: 0; list-style: none; border: 1px solid var(--line); background: var(--surface); }
+    .targets li { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: .65rem 1rem; border-bottom: 1px solid var(--line); }
+    .targets li:last-child { border-bottom: 0; }
+    .targets span { color: var(--muted); font-size: .9rem; }
+    .targets b { color: var(--text); font-weight: 650; text-align: right; }
 
-    .timeline { margin-top: 3rem; border-top: 1px solid var(--line); }
-    .stage { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 1.5rem; padding: 1.65rem 0; border-bottom: 1px solid var(--line); }
-    .stage > span { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid #54705e; border-radius: 50%; color: var(--green); font-weight: 800; }
-    .stage-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-    .stage h3 { margin: 0; font-size: clamp(1.2rem, 2.5vw, 1.8rem); }
-    .stage p { max-width: 920px; margin: .55rem 0 0; color: var(--muted); }
-    .pill { flex: none; padding: .32rem .65rem; border: 1px solid var(--line); border-radius: 999px; color: #cad8ce; background: var(--surface-2); font-size: .67rem; letter-spacing: .05em; text-transform: uppercase; }
+    /* ---------- days ---------- */
+    .day { padding-block: 1.9rem; border-bottom: 1px solid var(--line); }
+    .day:first-of-type { border-top: 1px solid var(--line); }
+    .day-head { display: flex; align-items: baseline; gap: .8rem; margin-bottom: .6rem; }
+    .day-key { flex: none; width: 1.6rem; height: 1.6rem; display: grid; place-items: center; border: 1px solid var(--accent-dim); color: var(--accent); font-family: var(--mono); font-size: .8rem; }
+    .day h3 { margin: 0; font-size: 1.18rem; }
+    .day-premise { color: var(--text-2); }
+    .day-premise q { color: var(--text); font-style: normal; }
+    .tl { margin: 1rem 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+    .tl li { display: grid; grid-template-columns: 4.6rem minmax(0, 1fr); gap: 1rem; padding: .62rem 0; border-bottom: 1px solid var(--line); }
+    .tl-time { color: var(--accent); font-size: .8rem; }
+    .tl p { margin: 0; color: var(--text-2); font-size: .96rem; }
+    .tl p b { color: var(--text); font-weight: 650; }
 
-    .next { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; margin-top: 3rem; border: 1px solid var(--line); background: var(--line); }
-    .next article { min-height: 285px; padding: clamp(1.4rem, 3vw, 2.4rem); background: var(--surface); }
-    .card-number { display: block; margin-bottom: 3.5rem; color: var(--green); }
-    .next h3 { font-size: clamp(1.35rem, 2.8vw, 2.05rem); }
-    .next p { max-width: 590px; margin: 0; color: var(--muted); }
-    .eta { display: grid; grid-template-columns: .75fr 1.25fr; gap: 3rem; margin-top: 1rem; padding: 2rem; border: 1px solid #7a473f; background: var(--red-soft); }
-    .eta .eyebrow { color: var(--red); }
-    .eta strong { display: block; font-size: clamp(1.4rem, 2.8vw, 2.2rem); line-height: 1.12; }
-    .eta p { margin: 0; color: #f2c5be; }
+    /* ---------- rules ---------- */
+    .rules { margin: 1.5rem 0 0; padding: 0; list-style: none; counter-reset: rule; border-top: 1px solid var(--line); }
+    .rules li { display: grid; grid-template-columns: 2.2rem minmax(0, 1fr); gap: 1rem; padding: .9rem 0; border-bottom: 1px solid var(--line); counter-increment: rule; }
+    .rules li::before { content: counter(rule, decimal-leading-zero); color: var(--accent); font-family: var(--mono); font-size: .78rem; }
+    .rules b { display: block; color: var(--text); font-weight: 650; }
+    .rules span { color: var(--muted); font-size: .93rem; }
 
-    .boundary { background: #0a1410; }
-    .boundary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 3rem; }
-    .boundary-grid article { padding: 1.5rem; border: 1px solid var(--line); background: var(--surface); }
-    .boundary-grid p { margin: 0; color: var(--muted); }
+    /* ---------- boundaries ---------- */
+    .bounds { margin: 1.4rem 0 0; border-top: 1px solid var(--line); }
+    .bounds > div { display: grid; grid-template-columns: minmax(0, 12rem) minmax(0, 1fr); gap: .35rem 1.25rem; padding: .85rem 0; border-bottom: 1px solid var(--line); }
+    .bounds dt { color: var(--text); font-weight: 650; }
+    .bounds dd { margin: 0; color: var(--muted); }
 
-    .glossary { margin: 3rem 0 0; border-top: 1px solid var(--line); }
-    .glossary div { display: grid; grid-template-columns: minmax(180px, .5fr) 1.5fr; gap: 2rem; padding: 1rem 0; border-bottom: 1px solid var(--line); }
-    .glossary dt { font-weight: 800; }
+    /* ---------- glossary ---------- */
+    .glossary { margin: 1.4rem 0 0; border-top: 1px solid var(--line); }
+    .glossary > div { display: grid; grid-template-columns: minmax(0, 13rem) minmax(0, 1fr); gap: .35rem 1.5rem; padding: .8rem 0; border-bottom: 1px solid var(--line); }
+    .glossary dt { color: var(--text); font-weight: 650; }
     .glossary dd { margin: 0; color: var(--muted); }
 
-    footer { padding: 3rem 0; color: var(--muted); background: #040906; }
-    footer .wrap { display: flex; justify-content: space-between; align-items: end; gap: 2rem; }
-    footer strong { color: var(--text); }
-    footer p { max-width: 820px; margin: .5rem 0 0; }
+    /* ---------- footer ---------- */
+    footer { padding: 2.5rem 0 3rem; background: var(--bg); }
+    .foot { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; }
+    footer p { max-width: var(--measure); margin: .45rem 0 0; color: var(--muted); font-size: .92rem; }
+    footer strong { display: block; color: var(--text); }
+    .to-top { flex: none; color: var(--muted); font-size: .85rem; text-decoration: none; }
+    .to-top:hover, .to-top:focus-visible { color: var(--accent); }
 
-    @media (max-width: 1080px) {
-      .flow, .targets, .boundary-grid { grid-template-columns: repeat(2, 1fr); }
-      .scope { grid-template-columns: repeat(2, 1fr); }
-      .targets div:nth-child(2) { border-right: 0; }
-      .targets div:nth-child(-n + 2) { border-bottom: 1px solid #3d7650; }
+    /* ---------- responsive ---------- */
+    @media (max-width: 900px) {
+      .mast-cols { grid-template-columns: 1fr; }
+      .contents ol { grid-template-columns: 1fr; }
+      .sec { grid-template-columns: 1fr; gap: .9rem; padding-block: clamp(2.25rem, 7vw, 3rem); }
+      .rail { position: static; display: flex; align-items: baseline; gap: .75rem; padding-bottom: .6rem; border-bottom: 1px solid var(--line); }
+      .col { max-width: none; }
+      .steps > li { grid-template-columns: 1fr; gap: .6rem; }
+      .stage-list > li { grid-template-columns: 2rem minmax(0, 1fr); }
+      .stage-list .pill { grid-column: 2; justify-self: start; }
+      .tags > div, .bounds > div, .glossary > div { grid-template-columns: 1fr; }
+      .contents .what { display: none; }
     }
-    @media (max-width: 880px) {
-      .nav { display: none; }
-      .hero-grid, .snapshot, .guarantees, .eta { grid-template-columns: 1fr; }
-      .truth { max-width: 540px; }
-      .facts { grid-template-columns: repeat(2, 1fr); }
-      .facts div:nth-child(2) { border-right: 0; }
-      .facts div:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
-      .split { grid-template-columns: 1fr; }
+    @media (max-width: 620px) {
+      body { font-size: 16px; }
+      .wrap { width: min(100% - 1.75rem, var(--max)); }
+      .bar { gap: 1rem; min-height: 50px; }
+      .nav { gap: .95rem; }
+      .tl li { grid-template-columns: 1fr; gap: .2rem; }
+      .targets li { flex-direction: column; gap: .2rem; }
+      .targets b { text-align: left; }
+      .truth dl > div { flex-direction: column; gap: .1rem; }
+      .truth dd { text-align: left; }
+      .foot { flex-direction: column; gap: 1.25rem; }
     }
-    @media (max-width: 650px) {
-      .wrap { width: min(100% - 2rem, var(--max)); }
-      h1 { font-size: clamp(2.65rem, 14vw, 4.6rem); }
-      .section-grid { grid-template-columns: 1fr; gap: 1rem; }
-      .number { padding-bottom: .65rem; border-bottom: 1px solid var(--line); }
-      .facts, .scope, .flow, .targets, .next, .boundary-grid { grid-template-columns: 1fr; }
-      .facts div, .facts div:nth-child(2), .targets div, .targets div:nth-child(2) { border-right: 0; border-bottom: 1px solid var(--line); }
-      .facts div:last-child, .targets div:last-child { border-bottom: 0; }
-      .stage { grid-template-columns: 48px minmax(0, 1fr); gap: .9rem; }
-      .stage-head { align-items: flex-start; flex-direction: column; }
-      .glossary div { grid-template-columns: 1fr; gap: .25rem; }
-      footer .wrap { align-items: flex-start; flex-direction: column; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; animation: none !important; }
     }
-    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   </style>
 </head>
 <body>
-  <header class="hero" id="top">
-    <div class="wrap">
-      <nav class="topbar" aria-label="Page sections">
-        <a class="brand" href="#top">AXIOM3D MOVE</a>
-        <div class="nav">
-          <a href="#scope">Scope</a>
-          <a href="#example">Big-data example</a>
-          <a href="#time">Why it took so long</a>
-          <a href="#server">Before the server</a>
-        </div>
-      </nav>
+  <a class="skip" href="#main">Skip to content</a>
 
-      <div class="hero-grid">
+  <div class="topbar">
+    <div class="wrap bar">
+      <a class="brand" href="#top">Axiom3D <span>migration</span></a>
+      <nav class="nav" aria-label="Page sections">
+        <a href="#overview">Overview</a>
+        <a href="#status">Status</a>
+        <a href="#philosophy">Philosophy</a>
+        <a href="#modules">Modules</a>
+        <a href="#days">Example days</a>
+        <a href="#boundaries">Not in this gate</a>
+        <a href="#rules">Rules</a>
+        <a href="#glossary">Words</a>
+      </nav>
+    </div>
+  </div>
+
+  <header class="masthead" id="top">
+    <div class="wrap">
+      <p class="eyebrow">Unlisted public page · plain-English snapshot · 21 August 2026</p>
+      <h1>What the whole migration is actually for.</h1>
+      <p class="lede">This move is for three things, and making the current code run faster is none of them: one trustworthy foundation of data that every part of Axiom3D drinks from, a way to describe a trading idea in ordinary words and get back a safe, repeatable experiment, and answers plain enough to act on without reading a single line of code. Everything else on this page — how data is captured, where it is stored, how experiments run, how risk is tested, how the machine is watched, what server all of it needs — follows from that one idea.</p>
+
+      <div class="mast-cols">
         <div>
-          <p class="eyebrow">Plain-English status · 21 August 2026</p>
-          <h1>The whole move is being designed. This is not a Phanes rebuild.</h1>
-          <p class="lede">The work covers Yellowstone capture, the Rust engine, raw trades, price candles, wallets and holders, scheduled jobs, Axiom and Phanes signals, AxiomLab experiments, storage, backups, security, monitoring, and future expansion. Olympus is deliberately later.</p>
+          <div class="northstar">
+            <p><span class="label">The one sentence that decides everything</span>Paul should be able to describe an idea naturally; the system should turn it into a safe, understandable, reproducible experiment; every module should share one trustworthy data foundation; and the result should be clear enough to act on without Paul reading code.</p>
+          </div>
+          <p class="scope-note"><span class="label">Everything this move covers</span>Data intake <i>·</i> engine boundaries <i>·</i> storage <i>·</i> research <i>·</i> scheduled work <i>·</i> AI workflows <i>·</i> risk and execution <i>·</i> observability <i>·</i> security <i>·</i> expandability <i>·</i> the server move</p>
         </div>
-        <aside class="truth" aria-label="Current truth">
-          <p class="eyebrow">The honest answer</p>
-          <p class="big">We are still proving the future design—not building the Linux server yet.</p>
+
+        <aside class="truth" aria-labelledby="truth-h">
+          <h2 id="truth-h">Where things actually stand today</h2>
           <dl>
             <div><dt>Server bought</dt><dd>No</dd></div>
             <div><dt>Live Axiom changed</dt><dd>No</dd></div>
             <div><dt>Phanes rebuilt</dt><dd>No</dd></div>
-            <div><dt>Decision needed now</dt><dd>None</dd></div>
+            <div><dt>Trading</dt><dd>Paper only</dd></div>
+            <div><dt>Decision needed from you</dt><dd>None right now</dd></div>
+            <div><dt>Current job</dt><dd>Proving the design</dd></div>
           </dl>
+          <p class="note">Static checkpoint. Nothing here is a live reading and nothing is given as a percentage; the only labels used are Done, In progress, Next and Later.</p>
         </aside>
       </div>
 
-      <div class="facts" aria-label="Four key facts">
-        <div><span>Current job</span><strong>Prove the whole-system plan</strong></div>
-        <div><span>Latest architecture result</span><strong>Five serious findings to repair</strong></div>
-        <div><span>Immediate step</span><strong>Recover the completed review without rerunning it</strong></div>
-        <div><span>After that</span><strong>Repair, re-check, issue the purchase sheet</strong></div>
-      </div>
+      <nav class="contents" aria-label="Contents">
+        <p class="eyebrow">What is on this page</p>
+        <ol>
+          <li><a href="#overview"><span class="num">01</span> What this actually is <span class="what">scope, in one page</span></a></li>
+          <li><a href="#status"><span class="num">02</span> Where the work stands <span class="what">done, in progress, next</span></a></li>
+          <li><a href="#philosophy"><span class="num">03</span> The philosophy, area by area <span class="what">eleven areas, with the labels</span></a></li>
+          <li><a href="#days"><span class="num">04</span> Example days <span class="what">seven walk-throughs</span></a></li>
+          <li><a href="#boundaries"><span class="num">05</span> Deliberately not in this gate <span class="what">what is later</span></a></li>
+          <li><a href="#rules"><span class="num">06</span> Rules we refuse to break <span class="what">eight lines</span></a></li>
+          <li><a href="#glossary"><span class="num">07</span> Plain words <span class="what">glossary</span></a></li>
+        </ol>
+      </nav>
     </div>
   </header>
 
-  <main>
-    <section>
-      <div class="wrap section-grid">
-        <p class="number">00</p>
-        <div>
-          <p class="eyebrow">The one-minute version</p>
-          <h2>You were right to ask whether this had become a rabbit hole.</h2>
-          <p class="big-copy">The last two days were not spent rebuilding one viewer or scraper. They were spent mapping the existing machine, writing the future rules for the entire system, and making two independent reviewers attack the same frozen plan before it decides what server you buy.</p>
-          <p class="warning">The uncomfortable truth: too much elapsed time went into safely packaging the reviewers’ answers. That protects the decision, but it is review machinery—not the migration itself. We have not started the Linux implementation phase.</p>
+  <main id="main">
+
+    <section id="overview">
+      <div class="wrap sec">
+        <div class="rail"><p class="num">01</p><p class="rail-label">Overview</p></div>
+        <div class="col">
+          <h2>This is not a two-day rewrite of one scraper or one viewer.</h2>
+          <p>It is the design of a whole-system move. It covers how live data is captured, where the engine's boundaries sit, how data is stored once and shared by everything, how research is run, how scheduled work is born and how it dies, how AI is allowed to help, how risk and execution are tested honestly, how the machine is watched and secured, how new parts get added later, and what server all of that adds up to.</p>
+          <p>Phanes and the viewers are <strong>one module inside that</strong> rather than the project itself. Olympus is <strong>deliberately later</strong>, and it is not allowed to block either the migration or the server purchase.</p>
+
+          <div class="callout">
+            <p><span class="label">Read this page in two halves</span>Almost everything below is <strong>target design</strong>: the rules the moved system must obey once it exists. It describes what is being built toward, not what is running today.</p>
+            <p>The one section that describes reality right now is <a href="#status">Where the work stands</a>. Nothing on this page claims to be finished unless that section says it is.</p>
+          </div>
+
+          <ul class="points">
+            <li><strong>The live system is untouched.</strong> Nothing here has been switched on, switched off, or rewired on the machine you use today.</li>
+            <li><strong>Nothing runs with real money.</strong> Every position discussed on this page is a paper position — a simulation used to measure whether an idea would have worked.</li>
+            <li><strong>The server decision comes last</strong>, once the design has survived independent review.</li>
+          </ul>
         </div>
       </div>
     </section>
 
-    <section id="scope">
-      <div class="wrap section-grid">
-        <p class="number">01</p>
-        <div>
-          <p class="eyebrow">What “the whole system” means</p>
-          <h2>One connected design, not a queue of isolated modules.</h2>
-          <div class="scope">
-            <article><span class="state mono">IN SCOPE</span><h3>Yellowstone + Rust engine</h3><p>Capture, normalize, simplify, move, compare old versus new, and tune on the server.</p></article>
-            <article><span class="state mono">IN SCOPE</span><h3>Trades, prices + candles</h3><p>Raw facts, complete chart history, missing-data rules, lifecycle indexes, retention, and fast reads.</p></article>
-            <article><span class="state mono">IN SCOPE</span><h3>Scheduled jobs + Python</h3><p>Inventory every useful job, remove duplicates, and replace fragile Windows tasks with supervised Linux services.</p></article>
-            <article><span class="state mono">IN SCOPE</span><h3>Axiom + Phanes signals</h3><p>Keep their useful capture, viewer, and ranking facts available to research. Rebuild only what the final design says should survive.</p></article>
-            <article><span class="state mono">IN SCOPE</span><h3>AxiomLab experiments</h3><p>Repeatable questions, fixed snapshots, traceable features, promotion rules, and no contamination of source facts.</p></article>
-            <article><span class="state mono">IN SCOPE</span><h3>Storage + operations</h3><p>Backups, restore drills, monitoring, remote access, security, rollback, cost, and room to expand.</p></article>
+    <section id="status" class="band">
+      <div class="wrap sec">
+        <div class="rail"><p class="num">02</p><p class="rail-label">Status</p></div>
+        <div class="col">
+          <h2>Where the work stands.</h2>
+          <p class="sub">Every step below is labelled in plain words, without percentages or invented dates, so this reads as the honest position at this checkpoint.</p>
+
+          <ol class="steps">
+            <li>
+              <span class="pill done">Done</span>
+              <div>
+                <h3>The review-and-evidence machinery is built</h3>
+                <p>There is now a dependable way to run an independent review of the whole architecture and keep its answer as evidence. The recovered independent review is preserved and fully replay-verified — it can be re-read and re-checked from stored evidence rather than re-run from scratch. Future reviews are pinned to the correct installed model generation, without breaking or invalidating the evidence already held.</p>
+              </div>
+            </li>
+            <li>
+              <span class="pill doing">In progress</span>
+              <div>
+                <h3>Feeding that review into the official record</h3>
+                <p>Wiring the recovered review into the canonical migration ledger — the single official record of what was found, what was decided and why — and proving that the next review can read that ledger as an input rather than starting blind.</p>
+              </div>
+            </li>
+            <li>
+              <span class="pill next">Next</span>
+              <div>
+                <h3>Apply the findings and the requirements on this page</h3>
+                <p>Five architecture findings are already on the table and must be repaired. Alongside them go the requirements described here: the human-first Lab, the full life-and-death cycle for scheduled work, shared data instead of copies, honest timing and risk testing, and controlled concurrency so heavy research cannot crowd out the fast path.</p>
+              </div>
+            </li>
+            <li>
+              <span class="pill next">Then</span>
+              <div>
+                <h3>Attack the whole architecture again, repeatedly</h3>
+                <p>Run independent whole-architecture reviews against unchanged evidence, over and over, until no new material blocker appears. If a review finds a genuine problem, it gets fixed and the count starts again. A finding is never waived to protect a schedule.</p>
+              </div>
+            </li>
+            <li>
+              <span class="pill later">Handoff</span>
+              <div>
+                <h3>Freeze the server package</h3>
+                <p>Verify and freeze the capacity model and machine specification, the step-by-step migration runbook, the rollback plan, the purchase sheet you would actually buy from, and the first-build sequence for day one.</p>
+              </div>
+            </li>
+          </ol>
+
+          <div class="callout">
+            <p><span class="label">The short version</span>The server is not ready to be bought yet, there is nothing for you to decide right now, and the work is carrying on in the meantime.</p>
           </div>
+
+          <h3>Why there is no date on this page</h3>
+          <p>The remaining time is governed by one thing: whether the next independent review finds another real architecture flaw. If it does, that flaw is repaired and the architecture is reviewed again. If it does not, the server package can be frozen. Any number given before that answer exists would only be a guess dressed up as a plan, so none is given here.</p>
+
+          <h3>The move, stage by stage</h3>
+          <ol class="stage-list">
+            <li>
+              <p class="num">01</p><h3>Map the machine that exists today</h3><span class="pill done">Done</span>
+              <p>The engine, data stores, scheduled jobs, dependencies, failure points, and what can simply be rebuilt rather than carried across. Revisited whenever something new surfaces.</p>
+            </li>
+            <li>
+              <p class="num">02</p><h3>Write the rules the future system must obey</h3><span class="pill doing">In progress</span>
+              <p>Written, and now being corrected against what review keeps finding. That is what most of this page describes.</p>
+            </li>
+            <li>
+              <p class="num">03</p><h3>Try hard to break the design before building it</h3><span class="pill doing">In progress</span>
+              <p>Independent whole-architecture review against a frozen design, with the answer kept as replayable evidence rather than a chat message.</p>
+            </li>
+            <li>
+              <p class="num">04</p><h3>Lock the server plan</h3><span class="pill next">Next</span>
+              <p>Machine, memory, disks, cost, service layout, access control, move order, tests and rollback — frozen and checked before anything is bought.</p>
+            </li>
+            <li>
+              <p class="num">05</p><h3>Buy and build</h3><span class="pill later">Later</span>
+              <p>Provision the server, port the services worth keeping, restore the data, and run old and new side by side.</p>
+            </li>
+            <li>
+              <p class="num">06</p><h3>Prove it, then cut over</h3><span class="pill later">Later</span>
+              <p>Compare outputs, run failure and restore drills, stay paper-only, and keep the current machine as the rollback until the new one has earned trust.</p>
+            </li>
+          </ol>
         </div>
       </div>
     </section>
 
-    <section class="example" id="example">
-      <div class="wrap section-grid">
-        <p class="number">02</p>
-        <div>
-          <p class="eyebrow">The kind of question this must make easy</p>
-          <h2>“Find every coin that hit $10k, then $50k. What patterns stand out?”</h2>
-          <p class="big-copy">Include its complete chart shape, wallets, holders, known KOL presence, Phanes ranking history, and Axiom viewer signals across a year or more—without waiting days for data preparation.</p>
+    <section id="philosophy">
+      <div class="wrap sec">
+        <div class="rail"><p class="num">03</p><p class="rail-label">Philosophy</p></div>
+        <div class="col">
+          <h2>The philosophy, area by area.</h2>
+          <p class="sub">Eleven areas. Each one opens with the idea in a single line, then explains it. All of this is target design — the standard the moved system is being held to.</p>
 
-          <div class="flow" aria-label="How a large research question should run">
-            <article><span class="step mono">1</span><h3>Find the cohort cheaply</h3><p>A small lifecycle index finds the coins that crossed both levels and records exactly when.</p></article>
-            <article><span class="step mono">2</span><h3>Read only what matters</h3><p>Load those coins’ chart windows plus matching wallet, holder, KOL, Phanes, and Axiom facts.</p></article>
-            <article><span class="step mono">3</span><h3>Use what was known then</h3><p>Rankings and memberships are time-aware, so future knowledge cannot leak into an old event.</p></article>
-            <article><span class="step mono">4</span><h3>Analyse in AxiomLab</h3><p>The experiment keeps the question, recipe, fixed data snapshot, result, and route back to the original facts.</p></article>
-          </div>
+          <div class="cats">
 
-          <div class="snapshot">
-            <div><p class="eyebrow">Training-ready snapshots?</p><strong>Yes—but thin ones.</strong></div>
-            <p>Store the expensive raw facts once. Compute shared indexes and reusable features once. Each experiment saves a compact feature-and-label table plus a manifest pointing back to the source. Large derived caches may expire because they can be rebuilt. We do not copy every coin’s full history into every experiment.</p>
-          </div>
-          <div class="targets" aria-label="Current performance and storage targets">
-            <div><span>Find a threshold cohort</span><strong>About 2 seconds</strong></div>
-            <div><span>Load 5,000 full coin charts</span><strong>30 seconds cold</strong></div>
-            <div><span>Sweep roughly 1.6 years</span><strong>Within 6 minutes</strong></div>
-            <div><span>Expected chart storage</span><strong>About 38 GB per year per retained version</strong></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="time">
-      <div class="wrap section-grid">
-        <p class="number">03</p>
-        <div>
-          <p class="eyebrow">Why two days disappeared</p>
-          <h2>Two very different kinds of problem got mixed together.</h2>
-          <div class="split">
-            <article class="issue good">
-              <p class="eyebrow">Worth finding</p>
-              <h3>Real holes in the future architecture</h3>
-              <p>Reviewers found places where missing data could look complete, safety actions could collide with the normal record order, identity could drift, storage evidence could be weaker than it appeared, or research could stop being reproducible.</p>
-              <p class="bottom">Those findings affect whether the future system can be trusted. They belong before the purchase.</p>
+            <article class="cat" id="trust">
+              <div class="cat-head"><span class="cat-num">01</span><h3>Trust and evidence</h3></div>
+              <p class="oneline"><span class="label">In one line</span>One source of truth, raw evidence that is never edited, and a visible trail from every answer back to the facts it came from.</p>
+              <p>If you cannot trust the numbers, nothing built on top of them matters. So the foundation is boring on purpose: facts are recorded once, kept exactly as they arrived, and every conclusion can be traced back to them.</p>
+              <ul class="points">
+                <li><strong>One canonical source of truth.</strong> If two places disagree about a fact, one of them is a copy, and the copy loses.</li>
+                <li><strong>Raw evidence is immutable.</strong> Written once, never quietly edited, never overwritten to make a later result look better.</li>
+                <li><strong>Every derived number carries its lineage</strong> — what it was built from, by which recipe, at what time. You can always walk backwards from an answer to the raw facts.</li>
+                <li><strong>Nothing is silently rewritten, promoted or declared valid after the fact.</strong> A result that failed stays failed and stays visible.</li>
+                <li><strong>Independent reviews must be repeatable later</strong>, after software has been upgraded, and reach the same answer from the same stored evidence.</li>
+              </ul>
             </article>
-            <article class="issue slow">
-              <p class="eyebrow">The frustrating delay</p>
-              <h3>New shapes in the reviewer’s message stream</h3>
-              <p>The reviewer sometimes completed a valid answer but packaged failed tools or the final message in a shape the strict reader had never seen. The reader refused to guess, so each newly observed shape needed a tiny versioned rule and hostile tests.</p>
-              <p class="bottom">The latest answer is complete. It is being recovered without asking the model to repeat or rewrite it.</p>
+
+            <article class="cat" id="intake">
+              <div class="cat-head"><span class="cat-num">02</span><h3>Data intake and the engine</h3></div>
+              <p class="oneline"><span class="label">In one line</span>Capture each fact once, check it at the door, slow down politely when overloaded, and never let research work block the trading path.</p>
+              <p>The intake is the front door of the whole system. Everything downstream inherits whatever mistakes are made here, so the rules are strict and few.</p>
+              <ul class="points">
+                <li><strong>Capture once.</strong> The live feed and the engine record each fact a single time, in one agreed shape.</li>
+                <li><strong>Validate early.</strong> Bad or incomplete data is caught at the door, not discovered three steps later inside a result.</li>
+                <li><strong>Backpressure when the door is crowded.</strong> When more arrives than can be handled, the system deliberately slows intake in a controlled way rather than silently dropping data or eating all the memory.</li>
+                <li><strong>Stable contracts.</strong> The engine offers other parts of the system a fixed, documented way to ask for data, so those parts can change without the engine changing.</li>
+                <li><strong>The hot path stays clear.</strong> The fast route that watches the market and could place a trade is never blocked by a research scan, a big historical read or an AI job.</li>
+              </ul>
             </article>
-          </div>
 
-          <div class="guarantees">
-            <div><p class="eyebrow">What the machinery now guarantees</p><h3>Failure stays failure. Success must be whole.</h3></div>
-            <ul>
-              <li>A failed review can never occupy the official success filenames.</li>
-              <li>A crash halfway through publication cannot leave a believable half-result.</li>
-              <li>Every answer is tied to the exact plan, code, model, and repository version that produced it.</li>
-              <li>Windows line-ending changes can no longer make clean files look altered.</li>
-              <li>New message shapes are rejected safely and admitted only through a narrow tested rule.</li>
-              <li>The current answer can be recovered with no new model call and no edited report text.</li>
-            </ul>
+            <article class="cat" id="storage">
+              <div class="cat-head"><span class="cat-num">03</span><h3>Shared data and storage</h3></div>
+              <p class="oneline"><span class="label">In one line</span>Store raw data once; everything reads from one shared, versioned, analysis-ready copy — no experiment keeps a private year of history.</p>
+              <p>This is the single biggest difference between a system that grows and one that slowly strangles itself. Copies are the enemy: they cost disk, they cost memory, and worst of all they eventually disagree with each other.</p>
+              <ul class="points">
+                <li><strong>Raw data is stored once.</strong> There is one copy of it in the system, and everything that needs it reads that copy.</li>
+                <li><strong>One shared analysis-ready layer.</strong> Versioned and partitioned — organised so that asking for three days of one coin reads three days rather than the whole year.</li>
+                <li><strong>Reusable feature tables.</strong> The expensive calculations everyone needs are computed once and shared, so no experiment has to work them out again.</li>
+                <li><strong>Experiments hold receipts rather than data.</strong> An experiment keeps a small manifest naming the exact slice it used, so the run can be repeated later without a private copy existing anywhere.</li>
+                <li><strong>Identical and overlapping work is coalesced.</strong> If two experiments want the same slice, it is prepared once and shared between them.</li>
+                <li><strong>A training-ready snapshot is a manifest plus shared feature data</strong> — not another copy of a year of raw candles.</li>
+              </ul>
+
+              <div class="callout">
+                <p><span class="label">The trough test</span>With 50 experiments running and 35 of them needing chart data, all 35 drink from one shared trough. There are not 35 copies on disk, and there are not 35 copies in memory.</p>
+              </div>
+
+              <p>The same discipline is what makes the machine sizing honest. The 128&nbsp;GB server should be able to run hot — busy, well used — while staying inside a deliberate safety reserve, rather than freezing or paging itself to death the first time several heavy jobs overlap.</p>
+              <ul class="points">
+                <li><strong>Memory and disk-traffic quotas</strong>, so no single job can quietly consume the machine.</li>
+                <li><strong>A bounded number of workers.</strong> Work queues rather than everything starting at once.</li>
+                <li><strong>One shared cache</strong> rather than each job warming its own private one.</li>
+                <li><strong>Backpressure applies here too</strong> — when the machine is full, new work waits its turn in a queue, which is what keeps the machine standing.</li>
+              </ul>
+
+              <details>
+                <summary>The performance and storage numbers this design is being held to</summary>
+                <div class="details-body">
+                  <p class="sub">These are design targets used to size the machine and judge the layout. They are not measurements of a running system.</p>
+                  <ul class="targets">
+                    <li><span>Find every coin that crossed a value threshold</span><b>About 2 seconds</b></li>
+                    <li><span>Load 5,000 full coin charts from cold storage</span><b>About 30 seconds</b></li>
+                    <li><span>Sweep roughly 1.6 years of history</span><b>Within 6 minutes</b></li>
+                    <li><span>Expected chart storage</span><b>About 38 GB per year, per retained version</b></li>
+                  </ul>
+                </div>
+              </details>
+            </article>
+
+            <article class="cat" id="modules">
+              <div class="cat-head"><span class="cat-num">04</span><h3>Composable modules</h3></div>
+              <p class="oneline"><span class="label">In one line</span>Every experiment says out loud which parts of the system it uses and which size of coin it covers.</p>
+              <p>The system is built from named parts. An experiment picks the parts it needs and labels them plainly, so anyone reading a result can see what went into it without asking. Several modules and several coin-size ranges can take part in a single experiment.</p>
+
+              <h4>Module tags</h4>
+              <dl class="tags">
+                <div><dt><span class="tag">Charts / OHLCV</span></dt><dd>Price and volume history, candle by candle.</dd></div>
+                <div><dt><span class="tag">Viewers / Phanes</span></dt><dd>Attention and ranking signals: who is watching, and how that changed.</dd></div>
+                <div><dt><span class="tag">Wallets / Holders</span></dt><dd>Who is buying, who is holding, how concentrated ownership is, and how that shifts.</dd></div>
+                <div><dt><span class="tag">KOLs</span></dt><dd>Presence and timing of accounts whose posts move attention.</dd></div>
+                <div><dt><span class="tag">Social / Grok</span></dt><dd>Wider social chatter and sentiment around a coin.</dd></div>
+                <div><dt><span class="tag">Execution</span></dt><dd>What a trade would really have cost: liquidity, slippage, fees, priority costs, failed fills.</dd></div>
+                <div><dt><span class="tag">Risk / Exit</span></dt><dd>Stops, time stops, invalidation, position size and exit behaviour.</dd></div>
+              </dl>
+
+              <h4>Coin-stage labels</h4>
+              <p class="sub">Stage labels are kept separate from module tags, and the actual numeric range in force is always printed next to the label, so the label never appears on its own. These are the ranges the design currently uses; whatever an experiment really runs with is shown on screen every time.</p>
+              <dl class="tags">
+                <div><dt><span class="tag">Birth</span></dt><dd><span class="range">launch → $5k</span>The first minutes of life, when almost nothing is known yet.</dd></div>
+                <div><dt><span class="tag">Low Cap</span></dt><dd><span class="range">$5k → $50k</span>The first real burst, and where most of the noise lives.</dd></div>
+                <div><dt><span class="tag">Mid Cap</span></dt><dd><span class="range">$50k → $250k</span>Survived the first stage; behaviour starts to differ.</dd></div>
+                <div><dt><span class="tag">High Cap</span></dt><dd><span class="range">$250k → $1M</span>Deeper liquidity, slower moves, different risks.</dd></div>
+                <div><dt><span class="tag">Blue Chip</span></dt><dd><span class="range">above $1M</span>The rare survivors, which behave almost nothing like the rest.</dd></div>
+              </dl>
+
+              <ul class="points">
+                <li><strong>Modules have stable contracts</strong> — a fixed, documented way to ask them for data — so a new module can be added later without rewiring the whole Lab.</li>
+                <li><strong>A result that used four modules says so on its face</strong>, and a result restricted to one cap range says that too.</li>
+              </ul>
+            </article>
+
+            <article class="cat" id="lab">
+              <div class="cat-head"><span class="cat-num">05</span><h3>The active Lab</h3></div>
+              <p class="oneline"><span class="label">In one line</span>The Lab starts empty after the move; you describe an idea in ordinary words and approve a plain-English plan before anything runs.</p>
+              <p>The Lab is where questions become experiments, and you drive it by talking to it in ordinary words instead of filling in a form.</p>
+              <ul class="points">
+                <li><strong>The active Lab starts empty and clean</strong> after the migration.</li>
+                <li><strong>Existing experiments are preserved in a read-only archive.</strong> Readable forever, but not cluttering the active list.</li>
+                <li><strong>You chat naturally with an AI.</strong> It turns that into a plain-English plan: what it will test, which modules it needs, which cap ranges, whether the data is ready, the likely runtime and honestly why it takes that long. Then it stops and waits for your approval.</li>
+                <li><strong>Nothing heavy runs before you approve it.</strong></li>
+              </ul>
+              <p>Once running, the experiment page is meant to be readable at a glance: the real stages, real progress, what it is doing right now, how long is left, and how much of the machine it is using. When it finishes, it ends with a clear conclusion, a confidence level, the caveats that actually matter, and one or two suggested next steps — with an optional deeper section underneath for anyone who wants the underlying numbers.</p>
+              <ul class="points">
+                <li><strong>Side discoveries become nested sub-experiments inside the parent page</strong>, not a swarm of near-duplicate experiment names in a list.</li>
+              </ul>
+            </article>
+
+            <article class="cat" id="schedules">
+              <div class="cat-head"><span class="cat-num">06</span><h3>Scheduled work</h3></div>
+              <p class="oneline"><span class="label">In one line</span>Permanent scheduled jobs are rare; experiment jobs are temporary, budgeted, and clean up after themselves.</p>
+              <p>A scheduled job is a task the machine runs by itself on a timer. They are useful and they are also how systems silently fill up with work nobody remembers starting. So they get a lifecycle: born for a reason, watched while alive, and removed when done.</p>
+              <ul class="points">
+                <li><strong>Permanent schedules are rare</strong> and limited to health checks, security checks, backups, retention and genuinely necessary maintenance.</li>
+                <li><strong>Experiment jobs are temporary and owned by the Lab.</strong> Each carries a purpose, an owner, the exact input snapshot it used, a resource budget, visible progress, an expiry date and automatic cleanup.</li>
+                <li><strong>Finished work disappears from the active system.</strong> What remains is a tiny audit receipt and whatever output was actually useful.</li>
+                <li><strong>Re-scanning gigabytes on a timer means something underneath is built wrong.</strong> The fix is partitions, indexes, incremental checkpoints and shared snapshots.</li>
+                <li><strong>Before any new scheduled job is added</strong>, one question is asked: is this compensating for missing live streaming or missing indexing? If yes, the layer underneath gets fixed instead.</li>
+              </ul>
+            </article>
+
+            <article class="cat" id="research">
+              <div class="cat-head"><span class="cat-num">07</span><h3>Research, timing, execution and risk</h3></div>
+              <p class="oneline"><span class="label">In one line</span>A pattern only becomes a strategy once entry, timing, stop, costs, exits and position size have all been tested against reality.</p>
+              <p>This is memecoin research, so it is judged on memecoin terms. Spotting a shape on a chart is the easy part and it is worth almost nothing on its own.</p>
+              <ul class="points">
+                <li><strong>A pattern is not a strategy</strong> until entry, timing, a realistic stop, a time stop, an invalidation condition, costs, exits and position sizing have all been tested.</li>
+                <li><strong>Vague words get defined from data.</strong> "Immediately" is not a feeling: it is the measured time-to-bounce and time-to-failure distributions for that exact coin stage and that exact market-cap range.</li>
+                <li><strong>The stop that matters is the tightest one that survives reality</strong> — after noise, thin liquidity, latency, price impact, failed fills, fees and priority costs — not the tightest number that looks good on paper.</li>
+                <li><strong>Results are judged on the right scoreboard:</strong> how much of the large moves was captured, how often the initial stake was recovered, net expected value after costs, drawdown, tail and rug losses, runners missed and time exposed. The annual-return framing borrowed from traditional finance does not describe this market, so it is not used here.</li>
+              </ul>
+
+              <details>
+                <summary>How every position is tested — the rules in full</summary>
+                <div class="details-body">
+                  <ul class="points">
+                    <li><strong>Enter small.</strong> The first position is a probe, sized to find out whether the idea is working.</li>
+                    <li><strong>Add only on genuinely new confirming evidence</strong> — something that was not known when the position was opened.</li>
+                    <li><strong>Recover the initial stake</strong> as soon as it is sensible, so the remaining position is playing with winnings.</li>
+                    <li><strong>Take partial profit</strong>, then <strong>leave a runner</strong> for the 2x, 3x and 4x moves that make the whole exercise worthwhile.</li>
+                    <li><strong>Exit quickly when the thesis breaks.</strong> The invalidation condition is written down before entry, not argued about afterwards.</li>
+                    <li><strong>Martingale and naive averaging down are forbidden outright.</strong> Doubling into a losing position is refused by the rules, and any add at all requires remaining risk budget, acceptable execution conditions and a hard maximum total position.</li>
+                  </ul>
+                  <p>A paper position can show a live confidence panel, split into parts anyone can read rather than one mysterious number: <strong>pattern</strong>, <strong>wallets and holders</strong>, <strong>viewers and momentum</strong>, <strong>social and KOL</strong>, <strong>execution and liquidity</strong>, <strong>risk warnings</strong>, and <strong>data freshness</strong>.</p>
+                  <p>Those parts map to actions through fixed rules: deterministic thresholds, persistence (a signal must hold, not flicker for one second) and cooldowns (no reacting to the same thing twice). The available actions are hold, add cautiously, recover the initial stake, reduce, or exit. The score itself is calibrated against what actually happened in paper trading, so it earns its confidence rather than asserting it.</p>
+                </div>
+              </details>
+            </article>
+
+            <article class="cat" id="ml">
+              <div class="cat-head"><span class="cat-num">08</span><h3>Machine learning and candle research</h3></div>
+              <p class="oneline"><span class="label">In one line</span>Candle questions are allowed, but only inside a matched group of similar coins, and only ever tested on the future.</p>
+              <p>Machine learning here means one thing: letting a model find patterns in past candles. It is genuinely useful and it is also the easiest place in the whole system to fool yourself, so the guard rails are strict.</p>
+              <ul class="points">
+                <li><strong>Candle experiments can ask the obvious questions:</strong> after this pattern, what is the next candle most likely to do — and what about the next five?</li>
+                <li><strong>Always separated by exact market-cap range, age since birth, liquidity and activity level.</strong> A $6k coin twenty minutes old is not the same animal as a $600k coin three days old, and averaging them produces a confident answer about nothing.</li>
+                <li><strong>Future-only, walk-forward testing.</strong> The model learns on the past and is judged on data it has never seen, so it can never use information that would not have existed at the moment of the trade.</li>
+                <li><strong>ML is one tool inside a reasoned experiment.</strong> It does not settle the question on its own, and it is no licence to generate a thousand slightly different parameter variants and call the pile of them research.</li>
+                <li><strong>"No edge here" is a real result</strong> and gets recorded as one.</li>
+              </ul>
+            </article>
+
+            <article class="cat" id="ai">
+              <div class="cat-head"><span class="cat-num">09</span><h3>The AI-assisted idea factory</h3></div>
+              <p class="oneline"><span class="label">In one line</span>Cheap scanners narrow the firehose; the AI reads summaries, asks one good question with a reason, and drafts one coherent experiment.</p>
+              <p>There is far too much market data for any AI to read, and reading it all would be both slow and pointless. So the shape is: dumb-and-cheap first, clever-and-expensive last.</p>
+              <ul class="points">
+                <li><strong>Cheap, deterministic scanners reduce the firehose</strong> to a bounded list of genuinely unusual observations. The language model never reads every trade or every candle.</li>
+                <li><strong>The AI receives compact summaries and representative samples</strong>, then asks an original, human-level question — with a stated reason why it is worth asking.</li>
+                <li><strong>It checks for duplicates first</strong>, then drafts a single coherent parent experiment rather than five overlapping ones.</li>
+                <li><strong>Parameter spam is rejected.</strong> Thirty near-identical threshold variants amount to one idea and twenty-nine wasted machine-hours, so they are refused before they run.</li>
+                <li><strong>Follow-ups nest under the parent experiment.</strong></li>
+                <li><strong>Human approval comes first.</strong> Later, once proposals have earned trust, safe low-cost work may run automatically — with spending budgets and kill switches.</li>
+                <li><strong>Creative thinking may use AI; arithmetic may not hide behind it.</strong> Execution and risk calculations stay reproducible and auditable, with no hidden AI-only reasoning behind a number.</li>
+              </ul>
+            </article>
+
+            <article class="cat" id="ops">
+              <div class="cat-head"><span class="cat-num">10</span><h3>Operations, health, security and visibility</h3></div>
+              <p class="oneline"><span class="label">In one line</span>Services run quietly and supervised, and anything long-running says what it is doing and whether it is stuck.</p>
+              <p>Most of the daily pain in the current setup has nothing to do with the algorithms. It comes from not knowing what is running, why it stopped, or whether something is wedged.</p>
+              <ul class="points">
+                <li><strong>Services run hidden and supervised.</strong> No console windows flashing up on the desktop, no job that only survives because a window is open.</li>
+                <li><strong>Health and security checks run continuously</strong>, and resource use is visible rather than guessed at.</li>
+                <li><strong>Deployment is recoverable.</strong> A bad change can be rolled back without heroics.</li>
+                <li><strong>Everything running has a clear owner</strong> and, where appropriate, an expiry date.</li>
+                <li><strong>Every long-running action shows what it is doing, why it is doing it, and whether it is blocked</strong>, in enough detail that you can tell real progress from a job that has quietly stalled.</li>
+              </ul>
+            </article>
+
+            <article class="cat" id="expand">
+              <div class="cat-head"><span class="cat-num">11</span><h3>Expandability and the server move</h3></div>
+              <p class="oneline"><span class="label">In one line</span>New parts join through documented contracts, and the server is bought only after the plan has been independently checked.</p>
+              <p>The design assumes it will be extended, because it will be. The cost of that assumption is paid once, up front, in discipline.</p>
+              <ul class="points">
+                <li><strong>New modules and experiments join through contracts</strong>, not one-off glue code wired in by hand and remembered by nobody.</li>
+                <li><strong>The server purchase follows a verified architecture, a capacity model, a migration runbook and a rollback plan.</strong> All four have to exist and hold up before any money is spent.</li>
+                <li><strong>Olympus is preserved as a future compatibility concern.</strong> The design leaves room for it. Its implementation and validation come later, and it does not size this server.</li>
+              </ul>
+            </article>
+
           </div>
         </div>
       </div>
     </section>
 
-    <section>
-      <div class="wrap section-grid">
-        <p class="number">04</p>
-        <div>
-          <p class="eyebrow">Where we are in the actual move</p>
-          <h2>Still before the server build.</h2>
-          <div class="timeline">
-            <article class="stage"><span class="mono">1</span><div><div class="stage-head"><h3>Map the current machine</h3><span class="pill">Mostly complete</span></div><p>Find the engine, data stores, jobs, dependencies, failure points, and what can simply be rebuilt.</p></div></article>
-            <article class="stage"><span class="mono">2</span><div><div class="stage-head"><h3>Write the future rules</h3><span class="pill">Written; being corrected</span></div><p>Define facts, missing data, history, storage layers, experiment boundaries, service ownership, security, recovery, and growth.</p></div></article>
-            <article class="stage"><span class="mono">3</span><div><div class="stage-head"><h3>Try hard to break the design</h3><span class="pill">In progress now</span></div><p>Two independent reviewers attack the same frozen design. Real problems are repaired; transport quirks do not become architecture findings.</p></div></article>
-            <article class="stage"><span class="mono">4</span><div><div class="stage-head"><h3>Lock the server plan</h3><span class="pill">Next</span></div><p>Freeze vendor, hardware, disks, cost, Linux service layout, access controls, move order, tests, and rollback.</p></div></article>
-            <article class="stage"><span class="mono">5</span><div><div class="stage-head"><h3>Buy and build the server</h3><span class="pill">Not started</span></div><p>Provision Linux, port retained services, restore data, and run the Windows and Linux systems side by side.</p></div></article>
-            <article class="stage"><span class="mono">6</span><div><div class="stage-head"><h3>Prove it, then cut over</h3><span class="pill">Not started</span></div><p>Compare outputs, run failure and restore drills, keep trading paper-only, and preserve Windows as rollback.</p></div></article>
-          </div>
+    <section id="days" class="band">
+      <div class="wrap sec">
+        <div class="rail"><p class="num">04</p><p class="rail-label">Example days</p></div>
+        <div class="col">
+          <h2>What a working day should actually look like.</h2>
+          <p class="sub">Seven walk-throughs. These are illustrative examples of how the finished system should feel to use — target design, not recordings of real runs. The times are there to show the order things happen in and the pace of a day.</p>
+
+          <article class="day" id="day-a">
+            <div class="day-head"><span class="day-key">A</span><h3>An ordinary strategy conversation</h3></div>
+            <p class="day-premise">The most common day. An idea arrives in your head in ordinary words and leaves the Lab as a tested answer.</p>
+            <ol class="tl">
+              <li><span class="tl-time">09:05</span><p>You say it plainly: <q>I keep seeing coins stall around $25k and then run. Is that real, or am I remembering the ones that worked?</q></p></li>
+              <li><span class="tl-time">09:08</span><p>The AI answers with a plan before any result exists: <b>why</b> the question is worth asking, the modules it needs — <span class="tag">Charts / OHLCV</span> <span class="tag">Wallets / Holders</span> <span class="tag">Execution</span> — the range it will use, <span class="tag">Low&nbsp;Cap</span> <span class="range">$5k → $50k</span>, whether the data is already prepared, an estimated runtime and the honest reason it takes that long.</p></li>
+              <li><span class="tl-time">09:09</span><p>It also lists the risk questions the experiment must answer before the idea could ever be traded: where the stop goes, what the time stop is, what costs apply, and what would prove the idea wrong.</p></li>
+              <li><span class="tl-time">09:10</span><p>You read one page of plain English and approve. <b>Nothing heavy ran before this point.</b></p></li>
+              <li><span class="tl-time">09:11</span><p>The Lab starts. The page shows the current stage, what it is reading right now, how much is left and how much of the machine it is using.</p></li>
+              <li><span class="tl-time">10:40</span><p>Result: a conclusion in plain words, a confidence level, the caveats that matter, and one suggested next step. Underneath, an optional section with the underlying numbers for when you want them.</p></li>
+            </ol>
+          </article>
+
+          <article class="day" id="day-b">
+            <div class="day-head"><span class="day-key">B</span><h3>A year-scale look back across every module</h3></div>
+            <p class="day-premise"><q>Take every coin that reached $10k and then $50k. Show me the full chart patterns, the wallets, the holders, the KOLs, the viewer signals and the Phanes rankings.</q> The kind of question that used to mean days of preparation.</p>
+            <ol class="tl">
+              <li><span class="tl-time">08:40</span><p>The question is asked in one sentence.</p></li>
+              <li><span class="tl-time">08:41</span><p>The cohort is found from <b>a small index</b> rather than by reading a year of raw data. It returns the coins that crossed both levels and the exact moment each crossing happened.</p></li>
+              <li><span class="tl-time">08:45</span><p>The experiment declares itself: <span class="tag">Charts / OHLCV</span> <span class="tag">Wallets / Holders</span> <span class="tag">KOLs</span> <span class="tag">Viewers / Phanes</span>, moving from <span class="tag">Low&nbsp;Cap</span> <span class="range">$5k → $50k</span> into <span class="tag">Mid&nbsp;Cap</span> <span class="range">$50k → $250k</span>.</p></li>
+              <li><span class="tl-time">08:50</span><p>Reads are partitioned: only the relevant coins and the relevant days are loaded, from the shared analysis-ready layer. Another experiment prepared part of that slice yesterday, so this one <b>reuses the shared snapshot</b> instead of building it again.</p></li>
+              <li><span class="tl-time">09:20</span><p>Rankings and memberships are read as they were known at the time, so later knowledge cannot leak backwards into an old event and make the past look obvious.</p></li>
+              <li><span class="tl-time">10:15</span><p>Two side questions appear during the run. Both become nested sub-experiments under this one. Neither gets its own copy of the year.</p></li>
+              <li><span class="tl-time">11:30</span><p>Result delivered. The storage this whole day added comes to <b>one manifest, some shared features and one write-up</b>, with no extra copy of the year sitting anywhere.</p></li>
+            </ol>
+          </article>
+
+          <article class="day" id="day-c">
+            <div class="day-head"><span class="day-key">C</span><h3>A low-cap bounce and loss-minimisation day</h3></div>
+            <p class="day-premise">A repeating shape shows up: birth, a burst to $5k–$10k, a pause, a dump, and occasionally a real recovery. Worth understanding, and dangerous to trade badly.</p>
+            <ol class="tl">
+              <li><span class="tl-time">07:30</span><p>A cheap scanner flags the shape as unusually frequent overnight and describes it in one line.</p></li>
+              <li><span class="tl-time">09:00</span><p>The AI proposes a single experiment rather than ten: how long the bounce takes <b>when it happens</b>, how long failure takes <b>when it does not</b>, the smallest stop that survives real execution, a time stop for when nothing happens at all, exits triggered by warning factors, partial profit-taking, recovering the initial stake, leaving a runner, and adds allowed only on new evidence.</p></li>
+              <li><span class="tl-time">09:05</span><p>Costs are built in from the start — fees, priority costs, slippage, failed fills — because a stop that only works without costs does not work.</p></li>
+              <li><span class="tl-time">09:15</span><p>Approved. It runs as a paper monitor for the day. Every position is simulated; no real money is involved.</p></li>
+              <li><span class="tl-time">11:00</span><p>The live confidence panel shows its parts separately: pattern, wallets and holders, viewers and momentum, social and KOL, execution and liquidity, risk warnings, data freshness.</p></li>
+              <li><span class="tl-time">13:20</span><p>Thresholds and cooldowns turn those parts into one action: hold, add cautiously, recover initial, reduce, or exit. An add is refused because the risk budget is used up, even though confidence is high.</p></li>
+              <li><span class="tl-time">18:00</span><p>End of day: what the smallest realistic stop actually was, what it cost in runners missed, and whether the recovery leg is worth trading at all.</p></li>
+            </ol>
+          </article>
+
+          <article class="day" id="day-d">
+            <div class="day-head"><span class="day-key">D</span><h3>A candle and machine-learning day</h3></div>
+            <p class="day-premise">A narrow, technical question, kept honest by matching the group first and testing only on the future.</p>
+            <ol class="tl">
+              <li><span class="tl-time">10:00</span><p>The question: after this exact pattern, what is the next candle most likely to do — and what about the next five?</p></li>
+              <li><span class="tl-time">10:10</span><p>The group is fixed before anything is trained: exact market-cap range, age since birth, liquidity band and activity level. Mixing those would produce a confident average of unrelated things.</p></li>
+              <li><span class="tl-time">10:30</span><p>Training runs on the past only, and is scored walk-forward on stretches of data the model has never seen.</p></li>
+              <li><span class="tl-time">10:35</span><p>The experiment states in advance what result would change a decision — for example: if failure inside the next five candles is more common than success in this group, entry waits for confirmation instead of anticipating it.</p></li>
+              <li><span class="tl-time">15:00</span><p>The answer for this group is "no usable edge". That is recorded as a finding, with the group definition attached, so nobody spends another day rediscovering it.</p></li>
+            </ol>
+          </article>
+
+          <article class="day" id="day-e">
+            <div class="day-head"><span class="day-key">E</span><h3>A side-discovery day</h3></div>
+            <p class="day-premise">The most valuable accidents happen mid-experiment. They need somewhere sensible to live.</p>
+            <ol class="tl">
+              <li><span class="tl-time">11:40</span><p>Halfway through a larger experiment, something odd appears: a small set of wallets shows up early in a suspicious share of the winners.</p></li>
+              <li><span class="tl-time">11:45</span><p>It becomes a <b>nested sub-experiment on the same page</b>, with its own stages, its own progress and its own result.</p></li>
+              <li><span class="tl-time">14:00</span><p>It finishes without disturbing the parent run.</p></li>
+              <li><span class="tl-time">16:30</span><p>The parent conclusion keeps the relationship: it says where the side finding came from, and what it does — or does not — change about the main answer.</p></li>
+              <li><span class="tl-time">16:31</span><p>What this arrangement avoids is <b>a new top-level experiment with a nearly identical name</b>, drifting away from the context that produced it.</p></li>
+            </ol>
+          </article>
+
+          <article class="day" id="day-f">
+            <div class="day-head"><span class="day-key">F</span><h3>A maintenance day</h3></div>
+            <p class="day-premise">The boring day that decides whether the system is still healthy a year from now.</p>
+            <ol class="tl">
+              <li><span class="tl-time">03:00</span><p>Permanent scheduled work runs as usual: health checks, security checks, backups, retention.</p></li>
+              <li><span class="tl-time">09:00</span><p>Three experiment schedules from last week reach their expiry and remove themselves. Their scratch data goes with them.</p></li>
+              <li><span class="tl-time">09:01</span><p>What is left behind is deliberately small: a receipt saying what ran, on which input snapshot and what it produced — plus the outputs that were actually useful.</p></li>
+              <li><span class="tl-time">09:30</span><p>The health view shows nothing running that nobody remembers starting, and no scratch pile quietly growing on a disk.</p></li>
+            </ol>
+          </article>
+
+          <article class="day" id="day-g">
+            <div class="day-head"><span class="day-key">G</span><h3>A future supervised idea-factory day</h3></div>
+            <p class="day-premise">Later, once the proposals have proved themselves. Still supervised, still bounded.</p>
+            <ol class="tl">
+              <li><span class="tl-time">02:00</span><p>Scanners work through the night and produce a <b>bounded</b> list of unusual observations. The bound is deliberate, so what lands in the morning is a short list you can actually read.</p></li>
+              <li><span class="tl-time">08:30</span><p>The AI proposes a small number of reasoned, genuinely new experiments, each with a stated reason for existing.</p></li>
+              <li><span class="tl-time">08:31</span><p>Duplicates of existing work and formula spam are rejected before you ever see them.</p></li>
+              <li><span class="tl-time">09:00</span><p>You read the short list and approve what runs. Automation of the cheap, safe end comes later still — and even then with spending budgets and kill switches.</p></li>
+            </ol>
+          </article>
         </div>
       </div>
     </section>
 
-    <section id="server">
-      <div class="wrap section-grid">
-        <p class="number">05</p>
-        <div>
-          <p class="eyebrow">What remains before you buy the server</p>
-          <h2>Four understandable checkpoints.</h2>
-          <div class="next">
-            <article><span class="card-number">01</span><h3>Finish the no-model recovery</h3><p>Import the already-completed answer under the newly tested message rule. Preserve its original failure evidence. Do not ask the reviewer to rewrite history.</p></article>
-            <article><span class="card-number">02</span><h3>Repair the five serious findings</h3><p>Apply the review’s five material findings to the architecture. Explicitly mark Olympus as later and non-blocking.</p></article>
-            <article><span class="card-number">03</span><h3>Get two clean independent checks</h3><p>Both reviewers must find no new serious issue in the same unchanged design. A genuine new issue is fixed and the clean count starts again.</p></article>
-            <article><span class="card-number">04</span><h3>Hand you the exact purchase sheet</h3><p>Vendor, model, RAM, disks, location, setup and monthly cost, storage layout, security baseline, and the first-day build sequence.</p></article>
-          </div>
-          <div class="eta">
-            <div><p class="eyebrow">Honest estimate from this checkpoint</p><strong>Best path: about 4–8 focused hours</strong></div>
-            <p>That is a range, not a promise. The recovery itself should be well under an hour. Most uncertainty is whether the repaired architecture survives both new attacks. A real problem will be fixed rather than waived to protect the estimate.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="boundary">
-      <div class="wrap section-grid">
-        <p class="number">06</p>
-        <div>
-          <p class="eyebrow">Deliberately not in this purchase gate</p>
-          <h2>Keeping the boundary sane.</h2>
-          <div class="boundary-grid">
-            <article><h3>Olympus</h3><p>Later. The design leaves room for it, but Olympus will not delay this move or size the first server.</p></article>
-            <article><h3>Moving the dashboard UI</h3><p>The dashboard stays on your PC for this cutover. Its data feeds must work; moving the interface itself is not required.</p></article>
-            <article><h3>Live-money trading</h3><p>Not authorized. The migration remains paper-only until a separate explicit decision and safety gate.</p></article>
-            <article><h3>Large historical backfill</h3><p>The first large backfill follows the move. It is not a reason to postpone buying or building the server.</p></article>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <div class="wrap section-grid">
-        <p class="number">07</p>
-        <div>
-          <p class="eyebrow">Plain words used here</p>
-          <h2>No hidden cycle numbers.</h2>
-          <dl class="glossary">
-            <div><dt>Architecture</dt><dd>The rules and shape of the future system—not the finished code.</dd></div>
-            <div><dt>Independent review</dt><dd>Two separate AI reviewers try to find ways the same frozen plan can fail.</dd></div>
-            <div><dt>Clean check</dt><dd>Both reviewers find no new serious problem in one unchanged plan.</dd></div>
-            <div><dt>Training snapshot</dt><dd>A compact, fixed table for one experiment, with a receipt pointing back to shared source facts.</dd></div>
-            <div><dt>Cutover</dt><dd>The proven server becomes primary while the old machine stays available as rollback.</dd></div>
+    <section id="boundaries">
+      <div class="wrap sec">
+        <div class="rail"><p class="num">05</p><p class="rail-label">Not in this gate</p></div>
+        <div class="col">
+          <h2>Deliberately not part of this decision.</h2>
+          <p class="sub">Keeping the boundary sane is what stops the move from expanding forever. Each of these matters, and each one happens after this move rather than inside it.</p>
+          <dl class="bounds">
+            <div><dt>Olympus</dt><dd>Later. The design leaves room for it as a future compatibility concern, but it will not delay this move and it will not size the first server.</dd></div>
+            <div><dt>Moving the dashboard interface</dt><dd>The dashboard stays on your PC for this cutover. Its data feeds must keep working; relocating the interface itself is not required.</dd></div>
+            <div><dt>Live-money trading</dt><dd>Not authorised. Everything remains paper-only until a separate, explicit decision and a safety gate.</dd></div>
+            <div><dt>Large historical backfill</dt><dd>The first large backfill follows the move. It is not a reason to postpone buying or building the server.</dd></div>
           </dl>
         </div>
       </div>
     </section>
+
+    <section id="rules" class="band">
+      <div class="wrap sec">
+        <div class="rail"><p class="num">06</p><p class="rail-label">Rules</p></div>
+        <div class="col">
+          <h2>Rules we refuse to break.</h2>
+          <p class="sub">If a proposal breaks one of these, the proposal changes — not the rule.</p>
+          <ol class="rules">
+            <li><div><b>No duplicated raw truth.</b><span>One canonical copy of the facts. Everything else points at it.</span></div></li>
+            <li><div><b>No experiment-owned copy of a shared year-scale dataset.</b><span>An experiment keeps a receipt naming the slice it used, never its own private year of history.</span></div></li>
+            <li><div><b>No unbounded scan on the live machine.</b><span>Every read has limits, a budget and an owner. A job that wants to read everything gets rewritten until it no longer needs to.</span></div></li>
+            <li><div><b>No orphan job, schedule or scratch output.</b><span>Everything that starts has an owner and an end. Nothing survives because nobody remembered to stop it.</span></div></li>
+            <li><div><b>No hidden AI-only rationale.</b><span>If a number drives a decision, the reasoning behind it must be readable and reproducible by a human.</span></div></li>
+            <li><div><b>No trade hypothesis without time, costs, exit and invalidation.</b><span>A pattern with no stop, no clock and no cost model is still only an observation.</span></div></li>
+            <li><div><b>No confidence-based add without new evidence and a hard risk budget.</b><span>Feeling more sure about a position does not count as new information, and adding into a loser is forbidden outright.</span></div></li>
+            <li><div><b>No server purchase before the specification, runbook and rollback are independently checked.</b><span>The money is spent once the plan has survived review, and never as a way of forcing the plan to finish.</span></div></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="glossary">
+      <div class="wrap sec">
+        <div class="rail"><p class="num">07</p><p class="rail-label">Words</p></div>
+        <div class="col">
+          <h2>Plain words for the unavoidable terms.</h2>
+          <p class="sub">Everything on this page is written to be readable without these. They are here for the few terms that have no shorter honest substitute.</p>
+          <dl class="glossary">
+            <div><dt>OHLCV</dt><dd>The five numbers that make up one candle on a price chart for a slice of time: <b>o</b>pen, <b>h</b>igh, <b>l</b>ow, <b>c</b>lose and <b>v</b>olume.</dd></div>
+            <div><dt>Parquet</dt><dd>A file format for storing tables efficiently, arranged so a question can read just the days and columns it needs instead of the whole file.</dd></div>
+            <div><dt>Module</dt><dd>One self-contained part of the system — charts, wallets, viewers, social, execution, risk — with a fixed, documented way of being asked for data.</dd></div>
+            <div><dt>Manifest / snapshot</dt><dd>A receipt naming exactly which slice of data an experiment used, so the same run can be repeated later without keeping a private copy of the data.</dd></div>
+            <div><dt>Backpressure</dt><dd>When more data arrives than can be handled, the system deliberately slows the intake instead of dropping data silently or running out of memory.</dd></div>
+            <div><dt>Paper position</dt><dd>A simulated trade with no real money at risk, used to measure whether an idea would actually have worked.</dd></div>
+            <div><dt>KOL</dt><dd>"Key opinion leader" — an account whose posts move attention, and often price, when they mention a coin.</dd></div>
+            <div><dt>Runner</dt><dd>The small part of a position deliberately left open after profit has been taken, in case the coin keeps going 2x, 3x or 4x.</dd></div>
+            <div><dt>Time stop</dt><dd>An exit rule based on the clock rather than the price: if the expected move has not happened by a set time, leave anyway.</dd></div>
+            <div><dt>Nested sub-experiment</dt><dd>A smaller question that appeared during a bigger experiment and is answered inside it, on the same page, instead of becoming a separate experiment.</dd></div>
+            <div><dt>Cohort</dt><dd>A group of coins matched on the things that matter — size, age, liquidity, activity — so they can fairly be compared with each other.</dd></div>
+            <div><dt>Walk-forward testing</dt><dd>Training on the past and scoring only on later data the model has never seen, so a result cannot be flattered by information that did not exist at the time.</dd></div>
+            <div><dt>Hot path</dt><dd>The fast route that watches the market and could place a trade. It is kept clear of heavy research work on purpose.</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <footer>
-    <div class="wrap">
-      <div><strong>Axiom3D migration status</strong><p>Refreshed at major checkpoints. This page deliberately uses plain language; the internal review cycle names stay internal.</p></div>
-      <a href="#top">Back to top</a>
+    <div class="wrap foot">
+      <div>
+        <strong>Axiom3D migration — plain-English snapshot</strong>
+        <p>Updated at major checkpoints. Internal review names, version numbers and file locations stay internal on purpose. Everything described as design is a target the moved system must meet, not a claim that it already exists.</p>
+      </div>
+      <a class="to-top" href="#top">Back to top</a>
     </div>
   </footer>
 </body>
