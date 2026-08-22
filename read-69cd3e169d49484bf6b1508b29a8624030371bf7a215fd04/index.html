@@ -1,0 +1,875 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="no-referrer">
+  <title>Could our history be telling the model the future? A field memorandum for Rob</title>
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --bg-2: #0e0e10;
+      --surface: #131316;
+      --surface-2: #191920;
+      --line: #26262b;
+      --line-2: #33333a;
+      --text: #f4f4f5;
+      --text-2: #d7d7db;
+      --muted: #a3a3aa;
+      --muted-2: #85858e;
+      --accent: #ff8b3d;
+      --accent-2: #ffb27a;
+      --accent-dim: #a85a24;
+      --accent-soft: rgba(255, 139, 61, .09);
+      --measure: 72ch;
+      --max: 1180px;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      background: var(--bg);
+      scroll-behavior: smooth;
+      scrollbar-color: var(--line-2) var(--bg);
+      scrollbar-width: thin;
+      -webkit-text-size-adjust: 100%;
+    }
+    ::-webkit-scrollbar { width: 12px; height: 12px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--line-2); border: 3px solid var(--bg); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-dim); }
+    ::selection { background: var(--accent); color: #0a0a0b; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--bg);
+      font: 16.5px/1.62 var(--sans);
+      font-variant-numeric: tabular-nums;
+      overflow-wrap: break-word;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4, p, ul, ol, dl, dd, figure, table { margin-top: 0; }
+    h1, h2, h3, h4 { text-wrap: balance; line-height: 1.18; }
+    p { text-wrap: pretty; }
+    a { color: var(--accent-2); text-underline-offset: .2em; }
+    a:hover { color: var(--accent); }
+    strong { color: var(--text); font-weight: 650; }
+    code, .mono { font-family: var(--mono); font-size: .86em; color: var(--accent-2); }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+    [id] { scroll-margin-top: 5.5rem; }
+    .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+    .wrap { width: min(var(--max), calc(100% - 2.75rem)); margin-inline: auto; }
+    .measure { max-width: var(--measure); }
+
+    .skip {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      z-index: 50;
+      padding: .7rem 1rem;
+      background: var(--accent);
+      color: #0a0a0b;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .skip:focus { left: 0; color: #0a0a0b; }
+
+    /* ---------- top bar ---------- */
+    .topbar { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); }
+    .bar { display: flex; align-items: center; gap: 1.5rem; min-height: 54px; }
+    .brand { flex: none; color: var(--text); font-family: var(--mono); font-size: .78rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; text-decoration: none; }
+    .brand span { color: var(--accent); }
+    .nav { display: flex; gap: 1.15rem; min-width: 0; margin-left: auto; overflow-x: auto; overscroll-behavior-x: contain; white-space: nowrap; }
+    .nav a { padding: .35rem 0; border-bottom: 2px solid transparent; color: var(--muted); font-size: .82rem; text-decoration: none; transition: color .15s ease, border-color .15s ease; }
+    .nav a:hover, .nav a:focus-visible { color: var(--text); border-bottom-color: var(--accent); }
+
+    /* ---------- masthead ---------- */
+    .masthead { padding: clamp(2.25rem, 5.5vw, 4rem) 0 clamp(2rem, 4.5vw, 3rem); border-bottom: 1px solid var(--line); }
+    h1 { max-width: 22ch; margin-bottom: 1.1rem; font-size: clamp(1.9rem, 4.2vw, 2.9rem); letter-spacing: -.02em; }
+    .memo-meta { display: flex; flex-wrap: wrap; gap: .35rem 1.5rem; margin: 0 0 1.75rem; padding: .7rem 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); color: var(--muted); font-size: .84rem; }
+    .memo-meta div { display: flex; gap: .5rem; }
+    .memo-meta dt { color: var(--muted-2); font-family: var(--mono); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; align-self: baseline; }
+    .memo-meta dd { margin: 0; color: var(--text-2); }
+    .answer { max-width: var(--measure); }
+    .answer p { color: var(--text-2); font-size: clamp(1rem, 1.5vw, 1.1rem); }
+    .answer p:first-child { color: var(--text); }
+    .answer p:last-child { margin-bottom: 0; }
+
+    /* ---------- legend ---------- */
+    .legend { margin: 1.75rem 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .legend li { padding: .75rem 1rem .75rem 0; border-right: 1px solid var(--line); }
+    .legend li + li { padding-left: 1rem; }
+    .legend li:last-child { border-right: 0; }
+    .legend p { margin: .3rem 0 0; color: var(--muted); font-size: .84rem; }
+
+    .pill { display: inline-flex; align-items: center; gap: .45rem; padding: .2rem .55rem; border: 1px solid var(--line-2); color: var(--muted); font-family: var(--mono); font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+    .pill::before { content: ""; width: 7px; height: 7px; flex: none; }
+    .pill.design { color: var(--accent); border-color: var(--accent-dim); background: var(--accent-soft); }
+    .pill.design::before { background: var(--accent); }
+    .pill.legacy { color: var(--text-2); border-color: var(--line-2); }
+    .pill.legacy::before { background: var(--text-2); }
+    .pill.proof { color: var(--accent-2); border-color: var(--accent-dim); }
+    .pill.proof::before { border: 1px solid var(--accent); }
+    .pill.later { color: var(--muted); border-color: var(--line-2); }
+    .pill.later::before { border: 1px solid var(--muted-2); }
+
+    /* ---------- now line ---------- */
+    .nowline { margin-top: 2.25rem; }
+    .nowline h2 { margin-bottom: .35rem; font-size: 1.05rem; }
+    .nowline > p { max-width: var(--measure); margin-bottom: 1.25rem; color: var(--muted); font-size: .92rem; }
+    .track { position: relative; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); padding: 0; margin: 0; list-style: none; border-top: 1px solid var(--line-2); }
+    .track::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: var(--line-2); }
+    .track li { position: relative; padding: 1rem .85rem 0 0; min-width: 0; }
+    .track li::before { content: ""; position: absolute; left: 0; top: -1px; width: 1px; height: 11px; background: var(--accent-dim); }
+    .track .ok::before { background: var(--accent); }
+    .track .t { display: block; margin-bottom: .2rem; color: var(--accent); font-family: var(--mono); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; }
+    .track b { display: block; color: var(--text); font-size: .92rem; font-weight: 650; line-height: 1.25; }
+    .track span { display: block; margin-top: .25rem; color: var(--muted); font-size: .8rem; line-height: 1.4; }
+    .track .cut { border-left: 2px solid var(--accent); padding-left: .85rem; }
+    .track .cut::before { display: none; }
+    .track .cut .t { color: var(--accent); }
+    .track .no { color: var(--muted-2); }
+    .track .no b { color: var(--text-2); }
+    .track .no::before { background: var(--line-2); }
+    .track-zones { display: grid; grid-template-columns: 4fr 3fr; margin-top: 1rem; gap: 1rem; }
+    .track-zones p { margin: 0; padding-top: .55rem; font-size: .82rem; color: var(--muted); }
+    .track-zones p:first-child { border-top: 2px solid var(--accent); color: var(--accent-2); }
+    .track-zones p:last-child { border-top: 2px solid var(--line-2); }
+    .track-zones b { display: block; color: var(--text); font-weight: 650; }
+
+    /* ---------- sections ---------- */
+    section { border-bottom: 1px solid var(--line); }
+    .band { background: var(--bg-2); }
+    .sec { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: clamp(1.25rem, 4vw, 3.5rem); padding-block: clamp(2.5rem, 5.5vw, 4.25rem); }
+    .rail { position: sticky; top: 5rem; align-self: start; }
+    .rail .num { margin: 0 0 .3rem; color: var(--accent); font-family: var(--mono); font-size: .78rem; }
+    .rail .rail-label { margin: 0; color: var(--muted-2); font-size: .78rem; letter-spacing: .04em; }
+    .col { max-width: var(--measure); }
+    .col.wide { max-width: none; }
+    .col.wide > p, .col.wide > h2, .col.wide > h3, .col.wide > ul, .col.wide > .callout { max-width: var(--measure); }
+    h2 { margin-bottom: 1rem; font-size: clamp(1.5rem, 2.9vw, 2rem); letter-spacing: -.018em; }
+    h3 { margin-bottom: .5rem; font-size: 1.08rem; }
+    .col > p { color: var(--text-2); }
+    .col > p.sub { color: var(--muted); }
+
+    .callout { margin: 1.5rem 0; padding: 1rem 1.2rem; border: 1px solid var(--line-2); background: var(--surface); }
+    .callout p { margin: 0; color: var(--text); }
+    .callout p + p { margin-top: .65rem; color: var(--text-2); }
+    .callout .label { display: block; margin-bottom: .5rem; padding-bottom: .5rem; border-bottom: 1px solid var(--line-2); color: var(--accent); font-family: var(--mono); font-size: .7rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+
+    .points { margin: 1rem 0 0; padding: 0; list-style: none; }
+    .points li { position: relative; padding: .38rem 0 .38rem 1.15rem; color: var(--text-2); }
+    .points li::before { content: ""; position: absolute; left: 0; top: .95em; width: 6px; height: 6px; background: var(--accent-dim); }
+
+    /* ---------- concern table ---------- */
+    .filters { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: 1.25rem 0 0; }
+    .filters span { color: var(--muted-2); font-size: .8rem; margin-right: .25rem; }
+    .filters button { padding: .3rem .65rem; border: 1px solid var(--line-2); background: var(--surface); color: var(--muted); font: 700 .68rem/1.2 var(--mono); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+    .filters button[aria-pressed="true"] { color: var(--text); border-color: var(--accent-dim); background: var(--accent-soft); }
+    .filters button:hover { color: var(--text); }
+    .filters .all { margin-left: .25rem; }
+    html:not(.js) .filters { display: none; }
+    .filter-note { margin: .5rem 0 0; color: var(--muted-2); font-size: .8rem; }
+
+    table { width: 100%; border-collapse: collapse; margin: 1.25rem 0 0; font-size: .95rem; }
+    caption { text-align: left; color: var(--muted); font-size: .86rem; padding-bottom: .6rem; }
+    th, td { padding: .8rem .9rem .8rem 0; border-top: 1px solid var(--line); vertical-align: top; text-align: left; }
+    th { color: var(--muted-2); font-family: var(--mono); font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    tbody tr:last-child td { border-bottom: 1px solid var(--line); }
+    td b { color: var(--text); font-weight: 650; }
+    td .id { display: block; margin-top: .35rem; color: var(--muted-2); font-family: var(--mono); font-size: .74rem; }
+    td .note { display: block; margin-top: .4rem; color: var(--muted); font-size: .88rem; }
+    .concerns td:nth-child(1) { width: 3.5rem; color: var(--accent); font-family: var(--mono); font-size: .78rem; }
+    .concerns td:nth-child(2) { width: 34%; }
+    .concerns td:nth-child(4) { width: 24%; }
+    .concerns tr[hidden] { display: none; }
+
+    .studies td:nth-child(1) { width: 28%; }
+    .after-table { margin-top: 1.25rem; }
+    .studies td:nth-child(2), .studies td:nth-child(3) { color: var(--text-2); }
+
+    /* ---------- layer flow ---------- */
+    .layers { margin: 1.5rem 0 0; padding: 0; list-style: none; counter-reset: layer; border-top: 1px solid var(--line); }
+    .layers > li { display: grid; grid-template-columns: 2.4rem minmax(0, 1fr); gap: .25rem 1rem; padding: 1.1rem 0; border-bottom: 1px solid var(--line); counter-increment: layer; }
+    .layers > li::before { content: counter(layer, decimal-leading-zero); grid-column: 1; grid-row: 1 / span 4; color: var(--accent); font-family: var(--mono); font-size: .78rem; padding-top: .25rem; }
+    .layers > li > * { grid-column: 2; }
+    .layers h3 { margin: 0; font-size: 1.08rem; }
+    .layers .eli5 { margin: 0; color: var(--text-2); }
+    .layers .tech { margin: .35rem 0 0; color: var(--muted); font-size: .86rem; }
+    .layers .tech code { color: var(--accent-2); }
+    .layers .joins { margin: .4rem 0 0; color: var(--muted-2); font-size: .84rem; }
+
+    /* ---------- definition rows ---------- */
+    .rows { margin: 1.25rem 0 0; border-top: 1px solid var(--line); }
+    .rows > div { display: grid; grid-template-columns: minmax(0, 13rem) minmax(0, 1fr); gap: .35rem 1.5rem; padding: .8rem 0; border-bottom: 1px solid var(--line); }
+    .rows dt { color: var(--text); font-weight: 650; }
+    .rows dt code { display: block; margin-top: .15rem; font-weight: 400; }
+    .rows dd { margin: 0; color: var(--muted); }
+    .rows dd .pill { margin-left: .5rem; vertical-align: middle; }
+
+    .twocol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; margin-top: 1.5rem; }
+    .twocol h3 { padding-bottom: .5rem; border-bottom: 1px solid var(--line-2); }
+    .twocol .points { margin-top: .5rem; }
+
+    details { margin-top: 1.35rem; border: 1px solid var(--line); background: var(--surface); }
+    summary { display: flex; align-items: center; gap: .75rem; padding: .8rem 1.05rem; color: var(--text); font-size: .9rem; font-weight: 650; cursor: pointer; list-style: none; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "show"; margin-left: auto; color: var(--accent); font-family: var(--mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; }
+    details[open] summary::after { content: "hide"; }
+    details[open] summary { border-bottom: 1px solid var(--line); }
+    .details-body { padding: 1rem 1.05rem 1.15rem; }
+    .details-body > :last-child { margin-bottom: 0; }
+    .details-body .rows { margin-top: 0; border-top: 0; }
+    .details-body p { color: var(--text-2); }
+    .toggle-all { margin: 1rem 0 0; padding: .3rem .65rem; border: 1px solid var(--line-2); background: var(--surface); color: var(--muted); font: 700 .68rem/1.2 var(--mono); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+    .toggle-all:hover { color: var(--text); }
+    html:not(.js) .toggle-all { display: none; }
+
+    /* ---------- close ---------- */
+    .close p { color: var(--text); font-size: 1.05rem; }
+    .close p + p { color: var(--text-2); font-size: 1rem; }
+    .sign { margin-top: 1.5rem; color: var(--muted); font-size: .9rem; }
+
+    footer { padding: 2.5rem 0 3rem; background: var(--bg); }
+    .foot { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; }
+    footer p { max-width: var(--measure); margin: .45rem 0 0; color: var(--muted); font-size: .9rem; }
+    footer strong { display: block; color: var(--text); }
+    .to-top { flex: none; color: var(--muted); font-size: .85rem; text-decoration: none; }
+    .to-top:hover, .to-top:focus-visible { color: var(--accent); }
+
+    /* ---------- responsive ---------- */
+    @media (max-width: 1000px) {
+      .legend { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .legend li:nth-child(2) { border-right: 0; }
+      .legend li:nth-child(3) { padding-left: 0; border-top: 1px solid var(--line); }
+      .legend li:nth-child(4) { border-top: 1px solid var(--line); }
+    }
+    @media (max-width: 900px) {
+      .sec { grid-template-columns: 1fr; gap: .9rem; padding-block: clamp(2.25rem, 7vw, 3rem); }
+      .rail { position: static; display: flex; align-items: baseline; gap: .75rem; padding-bottom: .6rem; border-bottom: 1px solid var(--line); }
+      .col { max-width: none; }
+      .rows > div { grid-template-columns: 1fr; }
+      .twocol { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 760px) {
+      .track { grid-template-columns: 1fr; border-top: 0; border-left: 1px solid var(--line-2); }
+      .track::before { display: none; }
+      .track li { padding: .6rem 0 .6rem 1rem; border-bottom: 1px solid var(--line); }
+      .track li::before { top: .9rem; left: -1px; width: 11px; height: 1px; }
+      .track .cut { border-left: 2px solid var(--accent); margin-left: -1px; padding-left: 1rem; }
+      .track-zones { grid-template-columns: 1fr; gap: .5rem; }
+      .nowline > p.stack-note { display: block; }
+
+      table, thead, tbody, tr, th, td { display: block; }
+      thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+      tbody tr { padding: .9rem 0; border-top: 1px solid var(--line); }
+      tbody tr:last-child { border-bottom: 1px solid var(--line); }
+      td { padding: .3rem 0; border: 0; width: auto !important; }
+      tbody tr:last-child td { border-bottom: 0; }
+      td[data-label]::before { content: attr(data-label); display: block; margin-bottom: .15rem; color: var(--muted-2); font-family: var(--mono); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; }
+      .concerns td:nth-child(1) { font-size: .78rem; }
+      .legend { grid-template-columns: 1fr; }
+      .legend li { padding-left: 0 !important; border-right: 0; border-top: 1px solid var(--line); }
+      .legend li:first-child { border-top: 0; }
+      .brand, .nav a, .filters button, .toggle-all, .to-top { display: inline-flex; min-block-size: 44px; align-items: center; }
+    }
+    @media (min-width: 761px) { .stack-note { display: none; } }
+    @media (max-width: 620px) {
+      body { font-size: 16px; }
+      .wrap { width: min(100% - 1.75rem, var(--max)); }
+      .bar { gap: 1rem; min-height: 50px; }
+      .nav { gap: .95rem; }
+      .memo-meta { flex-direction: column; gap: .35rem; }
+      .foot { flex-direction: column; gap: 1.25rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; animation: none !important; }
+    }
+
+    /* ---------- print ---------- */
+    @media print {
+      :root { --bg: #ffffff; --bg-2: #ffffff; --surface: #ffffff; --surface-2: #f6f6f6; --line: #c9c9cc; --line-2: #9a9aa0; --text: #111111; --text-2: #222222; --muted: #444444; --muted-2: #555555; --accent: #b35a14; --accent-2: #8f4610; --accent-dim: #b35a14; --accent-soft: transparent; }
+      html, body { background: #fff; color: #111; }
+      .topbar, .skip, .filters, .toggle-all, .to-top, .stack-note { display: none !important; }
+      .rail { position: static; }
+      section, .masthead { break-inside: auto; }
+      .layers > li, .concerns tr, .rows > div, .legend li { break-inside: avoid; }
+      details { border: 1px solid #c9c9cc; }
+      details > .details-body { display: block; }
+      summary::after { content: ""; }
+      a { color: #111; text-decoration: underline; }
+      .pill.design, .pill.proof, .pill.legacy, .pill.later { background: transparent; color: #111; border-color: #555; }
+      body { font-size: 11pt; line-height: 1.45; }
+      h1 { font-size: 22pt; }
+      h2 { font-size: 16pt; }
+    }
+  </style>
+</head>
+<body>
+<!--
+THESIS: This page turns an abstract leakage warning into an evidence ledger; it refuses reassurance-by-claim.
+OWN-WORLD: Near-black paper, warm orange rulings, off-white ink, mono evidence labels, flat hairlines.
+STORY: Rob sees what is covered, what is not, why the richer substrate matters, and exactly what proof remains.
+FIRST VIEWPORT: Direct answer at left, causal now-line across the width, four-state legend immediately below; no dashboard metrics.
+FORM: A technical field memorandum in Read mode, seed ROB-LEAKAGE-READ-20260822.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+-->
+  <a class="skip" href="#main">Skip to content</a>
+
+  <div class="topbar">
+    <div class="wrap bar">
+      <a class="brand" href="#top">Axiom3D <span>memorandum</span></a>
+      <nav class="nav" aria-label="Page sections">
+        <a href="#concerns">Your concerns</a>
+        <a href="#building">What we build</a>
+        <a href="#studies">Studies</a>
+        <a href="#storage">Storage</a>
+        <a href="#legacy">Legacy tape</a>
+        <a href="#changed">What changed</a>
+        <a href="#proof">Proof owed</a>
+        <a href="#evidence">Evidence</a>
+      </nav>
+    </div>
+  </div>
+
+  <header class="masthead" id="top">
+    <div class="wrap">
+      <h1>Could our history be quietly telling the model the future?</h1>
+
+      <dl class="memo-meta">
+        <div><dt>Date</dt><dd>22 August 2026</dd></div>
+        <div><dt>For</dt><dd>Rob, from Paul and the migration work</dd></div>
+        <div><dt>Kind</dt><dd>Field memorandum, read mode; nothing on it is live</dd></div>
+        <div><dt>Sharing</dt><dd>The published copy uses an obscure unlisted-style URL and asks search engines not to index it. Anyone who obtains the link can read it.</dd></div>
+      </dl>
+
+      <div class="answer">
+        <p>Yes, it could, and you are right to raise it. Everything you describe is real: the completed bar that leaks its own future, the rolling window that looks both ways, the normaliser that has already seen 2026, the fill at a price that did not exist yet. Any of them can make a worthless model look brilliant, and the fast, event-level data we want to exploit makes the mistake easier to hide, not harder.</p>
+        <p>Most of what you raise has been central to the migration design from the start, rather than a patch added after your note. The design, as written, keeps separate clocks for when something happened on chain, when we received it, and when it was durably written down; it refuses to let a label learned later describe an earlier moment; it keeps outcomes in separate custody from decisions. Your note exposed four places where that thinking was implied but not yet written down as law: when bars and features become usable, what data a fitted statistic saw, how related observations are separated between train and test, and how a paper fill is allowed to be priced. Those four repairs are now written into the candidate Constitution, architecture and acceptance ledger.</p>
+        <p>None of this is solved. Written is not proven. Every acceptance proof that would demonstrate these laws hold in practice is still marked <code>not_started</code>, the six months of tape we already have was not captured under these laws, and no walk-forward test or latency sweep has been run. This page is the ledger of exactly what is designed, what runs today, what proof is owed, and what remains a later study.</p>
+      </div>
+
+      <ul class="legend" aria-label="The four states used on this page">
+        <li><span class="pill design">Design</span><p>Written into the data laws or acceptance text. A rule the moved system must obey. Not evidence that it does.</p></li>
+        <li><span class="pill legacy">Current legacy</span><p>What the existing system and its six-month tape actually do today. Valuable, narrower, not certified under the new laws.</p></li>
+        <li><span class="pill proof">Proof</span><p>An acceptance test that would show a law holds. Every one relevant to this page is <code>not_started</code>.</p></li>
+        <li><span class="pill later">Later study</span><p>Research-governance policy or an experiment to run once the substrate exists. Not a gate for buying the server.</p></li>
+      </ul>
+
+      <div class="nowline">
+        <h2>The now line: what a decision at time T may know</h2>
+        <p>Read left to right. Every fact carries its own clocks, and the model at T may use only what was durably known by T. Everything to the right of the cut belongs to the decision, execution or outcome audit and cannot feed back into that decision.</p>
+        <p class="stack-note">On a narrow screen this line reads top to bottom in the same order.</p>
+        <ol class="track">
+          <li class="ok"><span class="t">Event</span><b>It happened on chain</b><span>Slot, block, transaction index. Ordered by the chain, never by our wall clock.</span></li>
+          <li class="ok"><span class="t">Received</span><b>We saw it</b><span>Our receipt time, with a measured clock-uncertainty bound for that host and boot.</span></li>
+          <li class="ok"><span class="t">Durable</span><b>It was written down</b><span>A first-durable sequence and time, assigned by the database, never by the writer.</span></li>
+          <li class="cut"><span class="t">Cut at T</span><b>Knowledge cutoff</b><span>Only facts and labels durable by T may be read. An open bar stays explicitly open; it is closed only after its closure and watermark were available.</span></li>
+          <li class="no"><span class="t">Decide</span><b>Decision receipt</b><span>What was read, which version of which recipe, and when. Sealed before any outcome is seen.</span></li>
+          <li class="no"><span class="t">Fill</span><b>Earliest eligible fill</b><span>Decision time plus a declared latency, priced only from evidence that existed by then.</span></li>
+          <li class="no"><span class="t">Outcome</span><b>What happened next</b><span>Held in separate custody. Used to score, never to build a feature.</span></li>
+        </ol>
+        <div class="track-zones">
+          <p><b>Usable before the decision</b>Facts, bars and labels whose own availability time is at or before T.</p>
+          <p><b>Forbidden to the model</b>Anything later. It may only be used to judge what the decision did.</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <section id="concerns">
+      <div class="wrap sec">
+        <div class="rail"><p class="num">01</p><p class="rail-label">Your concerns</p></div>
+        <div class="col wide">
+          <h2>What Rob is worried about, row by row.</h2>
+          <p class="sub">Eight concerns from your note, each with a plain explanation and the honest state it is in today. The state is where the concern currently sits, not a grade.</p>
+
+          <div class="filters" role="group" aria-label="Filter concern rows by state">
+            <span>Show</span>
+            <button type="button" data-filter="design" aria-pressed="true">Design</button>
+            <button type="button" data-filter="legacy" aria-pressed="true">Current legacy</button>
+            <button type="button" data-filter="proof" aria-pressed="true">Proof</button>
+            <button type="button" data-filter="later" aria-pressed="true">Later study</button>
+            <button type="button" class="all" data-filter="all">Show all</button>
+          </div>
+          <p class="filter-note" id="filter-status" aria-live="polite">Showing all 8 rows.</p>
+
+          <table class="concerns">
+            <caption>Eight concerns, what each means, and its current state.</caption>
+            <thead>
+              <tr><th scope="col">No.</th><th scope="col">Concern</th><th scope="col">In plain terms</th><th scope="col">State today</th></tr>
+            </thead>
+            <tbody>
+              <tr data-state="design">
+                <td>01</td>
+                <td data-label="Concern"><b>Features built from the completed current bar.</b><span class="note">The 12:00 bar's final volume, high, low or close used to decide something at 12:00:00.</span></td>
+                <td data-label="In plain terms">It is asking "given everything that happened this second, what happens this second?" A bar that is still open at T cannot be read as if it had closed.</td>
+                <td data-label="State today"><span class="pill design">Design</span><span class="note">Repair written 22 Aug: every bar and feature row carries its interval start and end, <code>open_partial</code> or <code>closed</code>, a watermark and an <code>available_at</code> that waits for every input plus any required closure, watermark or finality receipt. It becomes usable only after the derived row itself is durably written. A bar closed after T is unreadable at T.</span><span class="id">MIG-ACC-000043 · not_started</span></td>
+              </tr>
+              <tr data-state="design">
+                <td>02</td>
+                <td data-label="Concern"><b>Rolling windows that look both ways.</b><span class="note">A centered average of t-10 to t+10, or a forward-looking window, fed in as a feature.</span></td>
+                <td data-label="In plain terms">The model is shown ten periods of the future and praised for noticing it. Feature libraries do this by default more often than people expect.</td>
+                <td data-label="State today"><span class="pill design">Design</span><span class="note">Same repair: a centered or forward window's last input governs when its target can exist, but the row remains <code>target_only</code>. It is an outcome column and cannot enter a decision-feature release at any time.</span><span class="id">MIG-ACC-000043 · not_started</span></td>
+              </tr>
+              <tr data-state="design">
+                <td>03</td>
+                <td data-label="Concern"><b>Normalising with the whole dataset.</b><span class="note">A mean, standard deviation, scaler or threshold fitted on 2024 to 2026 and applied to 2024 rows.</span></td>
+                <td data-label="In plain terms">The 2024 inputs are quietly reshaped by what 2025 and 2026 looked like. No future price is shown, but the ruler used to measure the past was made in the future.</td>
+                <td data-label="State today"><span class="pill design">Design</span><span class="note">Repair written 22 Aug: <code>fitted_artifact_v1</code> binds every fitted statistic to the exact rows and release it was fitted on and to a fit cutoff. It cannot be applied to any decision earlier than that cutoff.</span><span class="id">MIG-ACC-000043 · not_started</span></td>
+              </tr>
+              <tr data-state="design">
+                <td>04</td>
+                <td data-label="Concern"><b>Fills at prices that did not exist yet.</b><span class="note">Signal at 12:00:00.000, "bought" at the 12:00 close, or at the lowest price of the next second.</span></td>
+                <td data-label="In plain terms">Execution look-ahead. The prediction may be honest and the backtest still lies, because it trades at a price nobody could have had.</td>
+                <td data-label="State today"><span class="pill design">Design</span><span class="note">Repair written 22 Aug: <code>paper_fill_contract_v1</code> binds each paper fill to its decision receipt, a declared latency, the earliest eligible fill frontier and causal price evidence. Decision-bar close, future low and best-price-in-window fills are forbidden outright.</span><span class="id">MIG-ACC-000043 · not_started</span></td>
+              </tr>
+              <tr data-state="proof">
+                <td>05</td>
+                <td data-label="Concern"><b>Three clocks, not one.</b><span class="note">Event time, observation time and decision time stored for every prediction.</span></td>
+                <td data-label="In plain terms">"When did it happen", "when could we have known" and "when did we act" are different questions. Collapsing them into one timestamp is where most leaks start.</td>
+                <td data-label="State today"><span class="pill proof">Proof</span><span class="note">Already law, and stricter than three clocks: chain coordinates, receipt time with clock calibration, a database-assigned first-durable time, and a separate <code>knowledge_cutoff_v1</code>. The acceptance proof that reads honour all of them is <code>not_started</code>.</span><span class="id">DC-03, DC-08, MIG-ACC-000039</span></td>
+              </tr>
+              <tr data-state="proof">
+                <td>06</td>
+                <td data-label="Concern"><b>Later knowledge leaking backward.</b><span class="note">A wallet we now call a KOL treated as a known KOL last March; a viewer count from after T joined to a trade before T.</span></td>
+                <td data-label="In plain terms">Labels and off-chain numbers have their own "when did we learn this" clock. A point-in-time join must use the label as it was known then, and only off-chain frames that were durable by T.</td>
+                <td data-label="State today"><span class="pill proof">Proof</span><span class="note">Already law: bitemporal labels and <code>correlated_read_v1</code>, which joins off-chain observations only as the latest durable evidence no later than T and never calls them simultaneous with a chain event. Proof fixtures are written but <code>not_started</code>.</span><span class="id">DC-03, MIG-ACC-000039, MIG-ACC-000042</span></td>
+              </tr>
+              <tr data-state="legacy">
+                <td>07</td>
+                <td data-label="Concern"><b>The tape we already have.</b><span class="note">Six months of recorded history, captured by the current system.</span></td>
+                <td data-label="In plain terms">It was recorded before these laws existed. It is real and useful, but its bars and fill logic were never checked against them, and missing fields cannot be recovered from that tape itself.</td>
+                <td data-label="State today"><span class="pill legacy">Current legacy</span><span class="note">Failed landed transactions were filtered out at capture. Some raw coordinates, fee, compute and native-constraint fields are absent. Legacy bars and fills are not certified under the new laws and cannot be certified by re-labelling. See the legacy section below.</span><span class="id">DC-02 legacy gap, DATA-FAM pointers</span></td>
+              </tr>
+              <tr data-state="design later">
+                <td>08</td>
+                <td data-label="Concern"><b>Splits and delay tests.</b><span class="note">Chronological or walk-forward splits instead of random ones; re-running with +10 ms to +1 s of added delay.</span></td>
+                <td data-label="In plain terms">Random splits put the same burst on both sides of the exam. A delay sweep tells you whether an edge is real and fast, fragile, or a leak wearing a costume.</td>
+                <td data-label="State today"><span class="pill design">Design</span><span class="pill later">Later study</span><span class="note"><code>experiment_split_plan_v1</code> now requires a registered causal, chronological or walk-forward split with grouping and purge/embargo rules. Its proof is <code>not_started</code>. Registered latency sweeps at +0, +10, +50, +100, +250, +500 and +1000 ms remain later research: they do not gate the server purchase and none has run.</span><span class="id">MIG-ACC-000043 · not_started; latency sweep · later</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="building" class="band">
+      <div class="wrap sec">
+        <div class="rail"><p class="num">02</p><p class="rail-label">What we build</p></div>
+        <div class="col">
+          <h2>What we are actually building: five layers, each with its own clock.</h2>
+          <p>Think of it as a record office rather than a spreadsheet. Facts arrive, get stamped at the door, get filed once, and are only ever summarised by recipes with batch numbers. Decisions are sealed in envelopes before the result is known, and the results are kept by a separate clerk. The plain description comes first on each layer; the technical label underneath is what the documents call it.</p>
+
+          <ol class="layers">
+            <li>
+              <h3>The sealed shoebox of receipts</h3>
+              <p class="eli5">Every relevant thing that happened is kept once, exactly as it arrived, and never edited. That includes attempts that landed and failed, which today's system throws away, plus the exact chain coordinates, status and error, fee, compute units and the user's own price limits where the chain supplies them. Off-chain messages are kept per source, in their original shape.</p>
+              <p class="tech">Technical: cold truth. Immutable L0 bytes; <code>execution_attempt_v1</code> for <code>landed_success</code> and <code>landed_failed</code>; source-specific <code>external_observation_envelope_v1</code>; versioned protocol decoders for native constraints such as <code>minimum_amount_out</code>. DC-02, DC-08.</p>
+              <p class="joins">If a byte was never captured, it is marked absent. It is never reconstructed from a later price.</p>
+            </li>
+            <li>
+              <h3>The date stamp at the door</h3>
+              <p class="eli5">Each receipt gets several stamps: when it happened on chain, when we received it (with a measured error bar for our clock), and when the database durably wrote it down. The writer cannot choose the last one. An import can claim an old event date, but it cannot pretend we knew it earlier than we did.</p>
+              <p class="tech">Technical: event/source time, receipt time with <code>clock_calibration_v1</code>, database-assigned <code>first_durable_seq</code> and <code>first_durable_at</code>, and <code>knowledge_cutoff_v1</code> for every read. Availability can move forward by amendment, never backward. DC-03, DC-08.</p>
+              <p class="joins">Two receipts from different hosts two seconds apart compare as before, after, overlaps or unknown. Overlapping error bars are never called a lead.</p>
+            </li>
+            <li>
+              <h3>Recipes with batch numbers</h3>
+              <p class="eli5">Bars, averages, counts and scalers are made from the shoebox by named recipes. Every batch says which recipe version, which inputs, and up to which moment it is valid. A bar says whether it is still open or closed and when its last ingredient arrived. A fitted statistic says which rows it was fitted on and cannot be used before that period ends.</p>
+              <p class="tech">Technical: warm shared releases with derivation ids hashing code, parameters, inputs and cutoff (DC-13). Bars and features carry interval start and end, <code>open_partial|closed</code>, watermark and per-row <code>available_at</code>. <code>fitted_artifact_v1</code> binds fit rows, release and fit cutoff. Engine parity is checked three ways before a release is trusted (DC-12).</p>
+              <p class="joins">Two experiments asking for the same batch share one copy. Nobody gets a private version of the truth.</p>
+            </li>
+            <li>
+              <h3>The sealed envelope before the race</h3>
+              <p class="eli5">When a decision is made, or a candidate is evaluated and refused, a receipt records what was read, at which cutoff, with which recipe versions, and what the answer was. A paper fill is then allowed only at decision time plus a declared delay, at a price that existed by then. The envelope is sealed before anyone looks at what happened next.</p>
+              <p class="tech">Technical: <code>decision_evaluation_v1</code> terminal receipts for every evaluated candidate, including refusals and no-signal outcomes; <code>paper_fill_contract_v1</code> binding decision receipt, latency, earliest eligible fill frontier and causal price evidence. DC-13, MIG-ACC-000037.</p>
+              <p class="joins">A failed landed attempt is evidence of an attempt. It is never turned into a trade, a fill or a balance change.</p>
+            </li>
+            <li>
+              <h3>Scores kept by a separate referee</h3>
+              <p class="eli5">Outcomes live with a separate clerk who only answers "what happened after T" through a recorded query. Holdout data is counted out like a ration and cannot be refilled by renaming a study. Real landed fills, paper fills, counterfactual "what if we had followed" fills and claims from a video stay in four different drawers.</p>
+              <p class="tech">Technical: sealed experiment records before outcome access, counted holdout custody, <code>outcome_access_receipt_v1</code>, immutable score rows with visible re-score amendments. Actual versus paper versus counterfactual versus video outcomes are distinct through replay. DC-10, DC-13.</p>
+              <p class="joins">A score can be superseded in public. It can never be quietly rewritten.</p>
+            </li>
+          </ol>
+
+          <div class="callout">
+            <p><span class="label">Why this is the whole point of the migration</span>The move is not mainly about a faster machine. It is about being able to ask hundreds of future questions without collecting the past again and without each experiment inventing its own truth. Re-capture is impossible for bytes that were never kept, and a private copy of history per experiment is how five experiments end up disagreeing about one Tuesday.</p>
+            <p>Capture once, stamp honestly, derive by versioned recipe, decide with a sealed receipt, score through a referee. Every study below is the same substrate asked a different question.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="studies">
+      <div class="wrap sec">
+        <div class="rail"><p class="num">03</p><p class="rail-label">Studies</p></div>
+        <div class="col wide">
+          <h2>Why this unlocks many reliable experiments.</h2>
+          <p class="sub">Thirteen studies the substrate is designed to serve. Each names what a decision at T may know and what stays outcome-only. These are studies that become askable, not edges that have been found. Any of them may find nothing.</p>
+
+          <table class="studies">
+            <caption>Each row is a question, not a result.</caption>
+            <thead>
+              <tr><th scope="col">Study</th><th scope="col">Known at T</th><th scope="col">Outcome-only</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-label="Study"><b>Frenzy Footprints</b><span class="note">Does a sub-minute burst leave a measurable footprint before the move?</span></td>
+                <td data-label="Known at T">Landed successful and failed attempts up to T, fee and compute pressure, users' own price limits, exact distinct wallet roles, in chain order.</td>
+                <td data-label="Outcome-only">Whether price moved afterwards, and whether our own attempt at T plus latency would have landed.</td>
+              </tr>
+              <tr>
+                <td data-label="Study"><b>KOL before the move</b><span class="note">Do wallets we already knew as influential act before a burst?</span></td>
+                <td data-label="Known at T">Each wallet's label exactly as it was durably known at T. A wallet labelled later is "unknown" at T.</td>
+                <td data-label="Outcome-only">The move itself, and today's label for that wallet, which may be shown only with both knowledge times visible.</td>
+              </tr>
+              <tr>
+                <td data-label="Study"><b>Viewer acceleration</b><span class="note">Does attention speed up before price does?</span></td>
+                <td data-label="Known at T">The latest durable viewer frame no later than T, with its own receipt time. Never a frame that arrived after T, even if it straddles the same trade.</td>
+                <td data-label="Outcome-only">Later frames and the price path.</td>
+              </tr>
+              <tr>
+                <td data-label="Study"><b>Holder redistribution</b><span class="note">Does ownership spread or concentrate before a regime change?</span></td>
+                <td data-label="Known at T">Transaction-end holder state through the rooted chain frontier at T, or an explicit "partial" where the prefix is incomplete.</td>
+                <td data-label="Outcome-only">The redistribution that follows and what price did.</td>
+              </tr>
+              <tr>
+                <td data-label="Study"><b>Public catalyst timing</b><span class="note">Did a public profile or page change precede the trades?</span></td>
+                <td data-label="Known at T">If such a source is ever admitted: the interval between last-seen-old and first-seen-new, never a fabricated instant. Today this family has zero sources.</td>
+                <td data-label="Outcome-only">Subsequent trades. Any link between catalyst and coin is a versioned observational finding, never a causal label.</td>
+              </tr>
+              <tr>
+                <td data-label="Study"><b>Graduation and valuation seams</b><span class="note">What happens across the curve-to-pool boundary?</span></td>
+                <td data-label="Known at T">The instrument epoch and valuation basis in force at T. A price never silently spans a seam.</td>
+                <td data-label="Outcome-only">The post-seam path.</td>
+              </tr>
+              <tr>
+                <td data-label="Study"><b>Wider crypto market regime</b><span class="note">Does the same signal behave differently in a risk-on week?</span></td>
+                <td data-label="Known at T">Market context exactly as durably received by T, joined as off-chain evidence with its own cutoff.</td>
+                <td data-label="Outcome-only">The regime that followed, and any later regime label assigned with hindsight.</td>
+              </tr>
+              <tr>
+                <td data-label="Study"><b>Failure pressure versus actual fills</b><span class="note">When many attempts are failing, would ours have landed?</span></td>
+                <td data-label="Known at T">Landed-failure density and error types up to T, where the provider contract proves the denominator; otherwise "not measured".</td>
+                <td data-label="Outcome-only">Whether an attempt at T plus latency landed. Actual fills come only from actual receipts, never inferred.</td>
+              </tr>
+              <tr>
+                <td data-label="Study"><b>Latency decay</b><span class="note">How fast does the edge evaporate with added delay?</span></td>
+                <td data-label="Known at T">The identical information set at T for every run. Only the fill frontier moves: +0, +10, +50, +100, +250, +500, +1000 ms.</td>
+                <td data-label="Outcome-only">The price after each frontier. A result that does not decay with delay is treated as suspicious, not as good news.</td>
+              </tr>
+              <tr>
+                <td data-label="Study"><b>Current partial bar versus last closed bar</b><span class="note">Is the half-built bar informative, or just leaky?</span></td>
+                <td data-label="Known at T">The open partial bar as of T with its watermark, and the last fully closed bar, each carrying its own available-at time.</td>
+                <td data-label="Outcome-only">The final close of the bar that was open at T.</td>
+              </tr>
+              <tr>
+                <td data-label="Study"><b>One wallet 33 times versus 33 wallets once</b><span class="note">Is it a crowd or one keyboard?</span></td>
+                <td data-label="Known at T">Exact distinct wallet roles up to T: signer, fee payer, actor and account owner separately. Neither pattern is assumed to be 33 humans.</td>
+                <td data-label="Outcome-only">What followed. Entity grouping learned later stays later.</td>
+              </tr>
+              <tr>
+                <td data-label="Study"><b>First-seen novelty and deleted social evidence</b><span class="note">Does a brand-new ticker or a later-deleted post matter?</span></td>
+                <td data-label="Known at T">The first durable receipt of the ticker or post. A thing is novel at T only if nothing like it was durable before T.</td>
+                <td data-label="Outcome-only">The deletion, which is a later fact with its own knowledge time, and the price path.</td>
+              </tr>
+              <tr>
+                <td data-label="Study"><b>Actual versus paper versus video reconciliation</b><span class="note">Did the claimed trade resemble what a rule would have done?</span></td>
+                <td data-label="Known at T">The decision receipt and its paper fill contract.</td>
+                <td data-label="Outcome-only">Actual landed fills and staged exits, counterfactual follower fills, and the video's claim, kept as three separate things that may disagree.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p class="sub after-table">The thread through all thirteen: the "known at T" column is served from the same filed, stamped, versioned substrate, and the "outcome-only" column is served by the separate referee. Nobody rebuilds history to ask a new question, and no study gets to define T its own way.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="storage" class="band">
+      <div class="wrap sec">
+        <div class="rail"><p class="num">04</p><p class="rail-label">Storage</p></div>
+        <div class="col">
+          <h2>More data without a memory or storage explosion.</h2>
+          <p>Capturing failed attempts, fee and compute detail, user price limits and per-source off-chain messages means more bytes than today. The design absorbs that with one rule repeated at three temperatures: keep it once, share the summaries, bound the hot set. The picture is a library, not a photocopier.</p>
+
+          <dl class="rows">
+            <div>
+              <dt>One archive copy<code>cold truth</code></dt>
+              <dd>Every relevant envelope is stored once, compressed and sealed. Experiments reference its release and chunk ids; they do not copy it. If a byte is needed again, it is read from the same shelf.</dd>
+            </div>
+            <div>
+              <dt>A shared index<code>warm, content-addressed</code></dt>
+              <dd>Bars, participation prefixes, rapid-path chunks and fitted artifacts are built by recipe and named by their content. Thirty-five overlapping requests share one materialisation rather than making thirty-five. Everything here rebuilds from cold truth.</dd>
+            </div>
+            <div>
+              <dt>A small reading desk<code>hot, bounded</code></dt>
+              <dd>A fixed-size ring of recent slots, plus exact state only for mints that have been deliberately promoted. A lossy sketch may nominate a candidate for promotion; it can never supply a count, a rate or a decision value.</dd>
+            </div>
+            <div>
+              <dt>No private histories<code>no per-experiment copies</code></dt>
+              <dd>An experiment keeps a manifest naming the exact slice it used, not the slice. This is what stops five experiments disagreeing about one afternoon.</dd>
+            </div>
+            <div>
+              <dt>Hard ceilings<code>caps and refusal</code></dt>
+              <dd>Resident memory, queue depth, spool, active mints, slot tail and tracked identities each have a cap. When a cap is hit, admission is refused or closed with a receipt, or the interval is marked unavailable. Nothing is ever silently sampled to fit.</dd>
+            </div>
+          </dl>
+
+          <div class="callout">
+            <p><span class="label">How the machine size will be decided</span>Capacity is proven, not estimated: two representative live hours of real input plus a replay of the measured peak day freeze the bytes per day, queue, spool, memory, active-mint, slot-tail and identity caps before any hot projection is admitted. The exact bill of materials comes out of that measurement. It is not guessed on this page and it has not been produced yet.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="legacy">
+      <div class="wrap sec">
+        <div class="rail"><p class="num">05</p><p class="rail-label">Legacy tape</p></div>
+        <div class="col">
+          <h2>What six months of legacy tape can and cannot answer.</h2>
+          <p>The current system has recorded roughly six months of market history. That tape is valuable and it is not being thrown away. It is also narrower than the target, and honesty about the gap is the only way it stays useful.</p>
+
+          <div class="twocol">
+            <div>
+              <h3>It can support</h3>
+              <ul class="points">
+                <li>Exploratory questions about successful landed trades, prices and participation as they were recorded.</li>
+                <li>Forming hypotheses that a later, properly captured study would then test.</li>
+                <li>Shape-of-the-market context: how bursts, graduations and quiet periods looked across half a year.</li>
+                <li>Anchoring future capture: knowing which events to replay to test the new laws.</li>
+              </ul>
+            </div>
+            <div>
+              <h3>It cannot support</h3>
+              <ul class="points">
+                <li>Any certified failure-rate or attempt-pressure study from this tape alone. Failed landed transactions were filtered out at capture; a historical reconstruction would need a separately qualified chain-history source and is not assumed.</li>
+                <li>Exact fee, compute-unit and native price-limit analysis where those fields were never kept.</li>
+                <li>A certified leak-free feature set. Legacy bars and fill logic have not been checked under the new availability and fill laws.</li>
+                <li>A realistic latency sweep. Without failed attempts and exact coordinates the "would we have landed" half of the question is missing.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="callout">
+            <p><span class="label">The rule that does not bend</span>Missing old bytes cannot be invented. The tape keeps its legacy, uncertified status, and a conclusion drawn from it is labelled as drawn from it. Re-labelling does not certify anything.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="changed" class="band">
+      <div class="wrap sec">
+        <div class="rail"><p class="num">06</p><p class="rail-label">What changed</p></div>
+        <div class="col">
+          <h2>What changed because of this review.</h2>
+          <p>An independent audit of the current design against your note found that most of it was already law and that four contracts were implied but not written precisely enough. They are now written into the candidate Constitution, architecture and acceptance ledger as <code>MIG-ACC-000043</code>. Its proof status is <code>not_started</code>. Latency sweeps remain a later research exercise, not another migration contract.</p>
+
+          <dl class="rows">
+            <div>
+              <dt>Repair 1: bars declare when they exist<code>causal_bar_feature_v1</code></dt>
+              <dd>Every bar and feature row carries interval start and end, <code>open_partial</code> or <code>closed</code>, a watermark, and a per-row <code>available_at</code> that waits for every input plus required closure evidence. <code>feature_usable_at</code> then also waits until the derived row itself is durably written. A completed current bar cannot be read before those waits pass; centered and forward windows remain target-only and never enter a decision-feature release. <span class="pill design">Design</span></dd>
+            </div>
+            <div>
+              <dt>Repair 2: fitted statistics are pinned<code>fitted_artifact_v1</code></dt>
+              <dd>Any mean, standard deviation, scaler or threshold records the rows and release it was fitted on and a fit cutoff. It cannot be applied to a decision earlier than that cutoff, so a whole-dataset normaliser cannot reach backward. <span class="pill design">Design</span></dd>
+            </div>
+            <div>
+              <dt>Repair 3: paper fills need evidence<code>paper_fill_contract_v1</code></dt>
+              <dd>A paper fill binds its decision receipt, a declared latency, the earliest eligible fill frontier and the causal price evidence it used. Filling at the decision bar's close, at a future low, or at the best price in a window is forbidden. <span class="pill design">Design</span></dd>
+            </div>
+            <div>
+              <dt>Repair 4: related rows stay on one side of the exam<code>experiment_split_plan_v1</code></dt>
+              <dd>Every promotable experiment declares a causal, chronological or walk-forward split, the keys that keep related observations together, and enough purge or embargo around the boundary to cover the lookback and outcome horizon. Random temporal splits stay exploratory. <span class="pill design">Design</span></dd>
+            </div>
+            <div>
+              <dt>Research policy, not a gate<code>registered latency sweeps</code></dt>
+              <dd>Latency sweeps at +0 to +1000 ms are a standing robustness study after the causal fill contract exists. They are not conditions for buying the server and none has been run. <span class="pill later">Later study</span></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section id="proof">
+      <div class="wrap sec">
+        <div class="rail"><p class="num">07</p><p class="rail-label">Proof owed</p></div>
+        <div class="col">
+          <h2>Proof still owed.</h2>
+          <p class="sub">Every acceptance item below is <code>not_started</code>. This list is the gap between "written" and "shown to hold". It is the honest reason this page does not say solved.</p>
+
+          <dl class="rows">
+            <div>
+              <dt>Every evaluated candidate gets a receipt<code>MIG-ACC-000037</code></dt>
+              <dd>One durable terminal evaluation receipt per actually evaluated candidate, including refusals and no-signal, with none invented for candidates never evaluated. <span class="pill proof">Proof</span></dd>
+            </div>
+            <div>
+              <dt>Point-in-time joins honour every clock<code>MIG-ACC-000039</code></dt>
+              <dd>Price, participation, wallet and KOL labels, holder state and off-chain frames bind their own source and knowledge frontiers; a frame after T does not join; a label learned later is unknown at T; 33-by-1 differs from 1-by-33. <span class="pill proof">Proof</span></dd>
+            </div>
+            <div>
+              <dt>Serving objects are bounded and shared<code>MIG-ACC-000040</code></dt>
+              <dd>Overlapping requests share one materialisation; hot state stays within caps with millions of cold identities; a pin beyond capacity is refused before it opens; nothing scans cold truth on a live path. <span class="pill proof">Proof</span></dd>
+            </div>
+            <div>
+              <dt>The rapid-research substrate exists and stays bounded<code>MIG-ACC-000042</code></dt>
+              <dd>Successful and landed-failed attempts accounted for exactly once; native constraints decoded without borrowing a future price; clock overlaps never become a lead; two live hours plus peak-day replay freeze the caps before hot admission. <span class="pill proof">Proof</span></dd>
+            </div>
+            <div>
+              <dt>Causal features, fitted artifacts, splits and paper fills<code>MIG-ACC-000043</code></dt>
+              <dd>The four contracts above now have one bounded Gate 2 acceptance item: a bar closed after T is unreadable at T; a fitted statistic cannot apply before its fit cutoff; related observations cannot cross a causal split boundary; a forbidden fill basis is rejected. The item exists and is still <code>not_started</code>. <span class="pill proof">Proof</span></dd>
+            </div>
+          </dl>
+
+          <div class="callout close">
+            <p><span class="label">Bottom line, for Rob</span>You were right to ask, and you were asking about the centre of the migration, not its edge. The design separates what happened, what we knew, what we decided and what followed, and your note closed four gaps in how that was written down.</p>
+            <p>What we do not have is proof. None of the acceptance tests named above has run, the existing tape was not captured under these laws, no walk-forward test or latency sweep exists, and no edge has been shown. When the proofs above move from <code>not_started</code>, you will see the receipts, not a summary of them. Until then, the only claim this page makes is that the ledger is honest.</p>
+            <p class="sign">Paul, 22 August 2026. Updated at the next checkpoint, not on a schedule.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence" class="band">
+      <div class="wrap sec">
+        <div class="rail"><p class="num">08</p><p class="rail-label">Evidence</p></div>
+        <div class="col">
+          <h2>Technical evidence and stable identifiers.</h2>
+          <p class="sub">Collapsed by default. These are the internal identifiers the statements on this page rest on, so that any line above can be traced to a law or an acceptance item. Internal file locations stay internal.</p>
+          <button type="button" class="toggle-all" data-toggle-all aria-expanded="false">Expand all evidence</button>
+
+          <details>
+            <summary>Data Constitution laws referenced</summary>
+            <div class="details-body">
+              <dl class="rows">
+                <div><dt>DC-02<code>complete source capture</code></dt><dd>"Maximal source" is a set, not one stream. Declares successful and landed-failed coverage; <code>execution_attempt_v1</code> binds signature, coordinates, status and error, requested and actual compute and fee. Names today's successful-only filter as a legacy gap. A constraint is never called realised slippage.</dd></div>
+                <div><dt>DC-03<code>immutability and knowledge time</code></dt><dd>Sealed bytes never change; corrections append. Event time and first-known time are separate; imports cannot backdate knowledge; availability moves forward only. The database assigns <code>first_durable_seq</code> and <code>first_durable_at</code>; writer-supplied times are treated as claims.</dd></div>
+                <div><dt>DC-08<code>time, forks, ordering</code></dt><dd>Slot, rooted block, transaction index, observed, received, decoded and sealed times, commitment state and protocol generation are all stored. Chain ordering never uses a wall clock. Per-host, per-boot <code>clock_calibration_v1</code>; cross-host comparison returns before, after, overlaps or unknown.</dd></div>
+                <div><dt>DC-10<code>completeness and certification</code></dt><dd>A certification domain never spans a protocol transition; manifests record expected versus observed counts, gaps, orphans and quarantine. Sealed and certified are distinct states; readers see certified manifests only.</dd></div>
+                <div><dt>DC-12<code>engine parity</code></dt><dd>Every decision-bearing query must produce identical results through the pinned engine, the same engine with optimisations disabled, and an independent reader. A mismatch quarantines both the engine build and the finding.</dd></div>
+                <div><dt>DC-13<code>derivation, custody, scores</code></dt><dd>Derivation ids hash code, parameters, dependency closure, input release and cutoff. Experiments are sealed before outcome access; holdout consumption is counted and cannot be reset by renaming. Scores are immutable rows with visible supersession. The live scorer reaches outcomes only through a certified broker.</dd></div>
+                <div><dt>DC-17<code>crash safety and capacity</code></dt><dd>At capacity, research stops first, sealing pauses second, capture stops loudly with a declared hole before any unverified write. Every long-lived projection declares caps, admission priority, eviction receipts and a bounded re-entry path; no selector scans everything seen since boot.</dd></div>
+              </dl>
+            </div>
+          </details>
+
+          <details>
+            <summary>Acceptance items referenced, all <code>not_started</code></summary>
+            <div class="details-body">
+              <dl class="rows">
+                <div><dt>MIG-ACC-000037<code>Gate 2</code></dt><dd>One durable terminal <code>decision_evaluation_v1</code> receipt per evaluated candidate, including refused and no-signal; zero receipts for unevaluated universe members; distinct states survive crash, restart and outcome join.</dd></div>
+                <div><dt>MIG-ACC-000039<code>Gate 2</code></dt><dd>Cross-module answers bind <code>observed_chain_frontier_v1</code>, <code>canonical_resolution_v1</code> and <code>knowledge_cutoff_v1</code>; off-chain components join only as latest trusted durable no later than the decision cutoff. Fixtures include same-slot multi-instruction, 33-by-1 versus 1-by-33, bitemporal label gaps and two viewer frames straddling one trade.</dd></div>
+                <div><dt>MIG-ACC-000040<code>Gate 2</code></dt><dd>Every long-lived projection and serving object is bounded, shared, evictable and exactly rebuildable. Thirty-five overlapping requests within 1.25 times one materialisation; a large cold identity set with a small active set inspects a bounded selector; a pin beyond capacity is refused before opening.</dd></div>
+                <div><dt>MIG-ACC-000042<code>Gate 2</code></dt><dd>The bounded, replayable frenzy-research substrate: exact success and landed-failed denominator, native constraints with units and protocol generation, derived slippage unavailable without an as-known quote, <code>rapid_mint_path_v1</code> across seams, clock-overlap negatives, and a two-hour live plus peak-day replay capacity receipt before hot admission.</dd></div>
+                <div><dt>MIG-ACC-000043<code>Gate 2 · not_started</code></dt><dd>Bar and feature availability (<code>open_partial|closed</code>, watermark, <code>available_at</code>), <code>fitted_artifact_v1</code> fit-cutoff binding, a causal split plan, and <code>paper_fill_contract_v1</code> with forbidden fill bases. Written from this review; no implementation proof has run.</dd></div>
+              </dl>
+            </div>
+          </details>
+
+          <details>
+            <summary>Contracts and terms used above</summary>
+            <div class="details-body">
+              <dl class="rows">
+                <div><dt>knowledge_cutoff_v1</dt><dd>The durable sequence and time a read is allowed to know up to. Separate from chain frontier.</dd></div>
+                <div><dt>correlated_read_v1</dt><dd>A read that joins chain-derived components at their observed or canonical frontier and off-chain observations as the latest durable evidence no later than the cutoff, never calling them simultaneous.</dd></div>
+                <div><dt>causal_bar_feature_v1</dt><dd>A bar or feature row with explicit interval, boundary, watermark/finality and input frontier; its usable time can be no earlier than both its true availability and its own first-durable receipt.</dd></div>
+                <div><dt>open_partial | closed</dt><dd>Whether a bar's interval has ended as of the watermark. An open bar may be read as open; it may never be read as if closed.</dd></div>
+                <div><dt>fitted_artifact_v1</dt><dd>Any fitted statistic, bound to fit rows, release and fit cutoff; inapplicable before that cutoff.</dd></div>
+                <div><dt>paper_fill_contract_v1</dt><dd>Binds decision receipt, latency, earliest eligible fill frontier and causal price evidence for a simulated fill.</dd></div>
+                <div><dt>landed_success | landed_failed | orphaned | unresolved</dt><dd>Attempt states. A landed failure is an attempt, never a trade. Orphaned and unresolved are observed but not certified canonical.</dd></div>
+                <div><dt>Holdout custody</dt><dd>Outcome data reserved for confirmatory tests, consumed by count, not refillable by renaming a study.</dd></div>
+                <div><dt>experiment_split_plan_v1</dt><dd>A preregistered causal split: normally train on an earlier period and test on a later one, group related observations, and purge or embargo the boundary so one burst cannot sit on both sides.</dd></div>
+              </dl>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <div>
+        <strong>Field memorandum on look-ahead and execution-time leakage</strong>
+        <p>Static checkpoint dated 22 August 2026. The published copy sits at an obscure public URL and asks search engines not to index it; anyone who obtains the link can read it, so it contains no keys, endpoints, account or wallet details and no performance figures. Everything marked Design is a rule the moved system must meet, not a claim that it already does.</p>
+      </div>
+      <a class="to-top" href="#top">Back to top</a>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      document.documentElement.classList.add('js');
+
+      var rows = Array.prototype.slice.call(document.querySelectorAll('.concerns tbody tr'));
+      var buttons = Array.prototype.slice.call(document.querySelectorAll('.filters button[data-filter]'));
+      var status = document.getElementById('filter-status');
+      var labels = { design: 'Design', legacy: 'Current legacy', proof: 'Proof', later: 'Later study' };
+
+      function apply() {
+        var on = {};
+        buttons.forEach(function (b) {
+          if (b.dataset.filter !== 'all') on[b.dataset.filter] = b.getAttribute('aria-pressed') === 'true';
+        });
+        var shown = 0;
+        rows.forEach(function (r) {
+          var visible = r.dataset.state.split(/\s+/).some(function (state) { return !!on[state]; });
+          if (visible) { r.removeAttribute('hidden'); shown++; } else { r.setAttribute('hidden', ''); }
+        });
+        var active = Object.keys(on).filter(function (k) { return on[k]; }).map(function (k) { return labels[k]; });
+        if (status) {
+          status.textContent = shown === rows.length
+            ? 'Showing all ' + rows.length + ' rows.'
+            : 'Showing ' + shown + ' of ' + rows.length + ' rows' + (active.length ? ': ' + active.join(', ') : '') + '.';
+        }
+      }
+
+      buttons.forEach(function (b) {
+        b.addEventListener('click', function () {
+          if (b.dataset.filter === 'all') {
+            buttons.forEach(function (o) { if (o.dataset.filter !== 'all') o.setAttribute('aria-pressed', 'true'); });
+          } else {
+            b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+          }
+          apply();
+        });
+      });
+
+      var toggle = document.querySelector('[data-toggle-all]');
+      var details = Array.prototype.slice.call(document.querySelectorAll('#evidence details'));
+      if (toggle && details.length) {
+        function sync() {
+          var allOpen = details.every(function (d) { return d.open; });
+          toggle.setAttribute('aria-expanded', allOpen ? 'true' : 'false');
+          toggle.textContent = allOpen ? 'Collapse all evidence' : 'Expand all evidence';
+        }
+        toggle.addEventListener('click', function () {
+          var allOpen = details.every(function (d) { return d.open; });
+          details.forEach(function (d) { d.open = !allOpen; });
+          sync();
+        });
+        details.forEach(function (d) { d.addEventListener('toggle', sync); });
+        sync();
+      }
+
+      window.addEventListener('beforeprint', function () {
+        Array.prototype.forEach.call(document.querySelectorAll('details'), function (d) { d.open = true; });
+        rows.forEach(function (r) { r.removeAttribute('hidden'); });
+      });
+    })();
+  </script>
+</body>
+</html>
