@@ -444,7 +444,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 <td>06</td>
                 <td data-label="Concern"><b>Later knowledge leaking backward.</b><span class="note">A wallet we now call a KOL treated as a known KOL last March; a viewer count from after T joined to a trade before T.</span></td>
                 <td data-label="In plain terms">Labels and off-chain numbers have their own "when did we learn this" clock. A point-in-time join must use the label as it was known then, and only off-chain frames that were durable by T.</td>
-                <td data-label="State today"><span class="pill proof">Proof</span><span class="note">Already law: bitemporal labels and <code>correlated_read_v1</code>, which joins off-chain observations only as the latest durable evidence no later than T and never calls them simultaneous with a chain event. Proof fixtures are written but <code>not_started</code>.</span><span class="id">DC-03, MIG-ACC-000039, MIG-ACC-000042</span></td>
+                <td data-label="State today"><span class="pill proof">Proof</span><span class="note">Already law: bitemporal labels and <code>correlated_read_v1</code>, which joins off-chain observations only as the latest durable evidence no later than T and never calls them simultaneous with a chain event. Proof fixtures are specified; execution is <code>not_started</code>.</span><span class="id">DC-03, MIG-ACC-000039, MIG-ACC-000042</span></td>
               </tr>
               <tr data-state="legacy">
                 <td>07</td>
@@ -493,7 +493,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
             <li>
               <h3>The sealed envelope before the race</h3>
               <p class="eli5">When a decision is made, or a candidate is evaluated and refused, a receipt records what was read, at which cutoff, with which recipe versions, and what the answer was. A paper fill is then allowed only at decision time plus a declared delay, at a price that existed by then. The envelope is sealed before anyone looks at what happened next.</p>
-              <p class="tech">Technical: <code>decision_evaluation_v1</code> terminal receipts for every evaluated candidate, including refusals and no-signal outcomes; <code>paper_fill_contract_v1</code> binding decision receipt, latency, earliest eligible fill frontier and causal price evidence. DC-13, MIG-ACC-000037.</p>
+              <p class="tech">Technical: <code>decision_evaluation_v1</code> terminal receipts for every evaluated candidate, including refusals and no-signal outcomes; <code>paper_fill_contract_v1</code> binding decision receipt, latency, earliest eligible fill frontier and causal price evidence. DC-13, MIG-ACC-000037, MIG-ACC-000043.</p>
               <p class="joins">A failed landed attempt is evidence of an attempt. It is never turned into a trade, a fill or a balance change.</p>
             </li>
             <li>
